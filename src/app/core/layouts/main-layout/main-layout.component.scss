@@ -1,0 +1,20 @@
+// src/styles/_variables.scss
+@use  './../../../../styles/variables' as *;
+
+.app-header {
+  background-color: $primary-color;
+  color: white;
+  padding: $app-padding;
+}
+
+.app-content {
+  padding: $app-padding;
+  min-height: 80vh;
+}
+
+.app-footer {
+  background-color: $primary-color;
+  color: white;
+  padding: $app-padding;
+  text-align: center;
+}
