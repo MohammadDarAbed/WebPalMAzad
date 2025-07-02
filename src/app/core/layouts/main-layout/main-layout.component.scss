@@ -1,20 +1,33 @@
 // src/styles/_variables.scss
-@use  './../../../../styles/variables' as *;
+@use './../../../../styles/variables' as *;
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; // full viewport height
+}
 
 .app-header {
   background-color: $primary-color;
   color: white;
   padding: $app-padding;
-}
+  flex-shrink: 0;
 
-.app-content {
-  padding: $app-padding;
-  min-height: 80vh;
+  text-align: left;
+
 }
 
 .app-footer {
   background-color: $primary-color;
   color: white;
   padding: $app-padding;
+  flex-shrink: 0;
   text-align: center;
+}
+
+.app-content {
+  flex: 1 1 auto;
+  overflow-y: auto; // enable scroll only in content area if needed
+  padding: $app-padding;
+  min-height: 0; // necessary for scroll to work properly in flex child
 }
