@@ -4,10 +4,10 @@
 
     <div class="form-group">
       <label for="email">Email</label>
-      <input id="email" type="email" formControlName="email" />
+      <input id="userNameOrEmail" type="email" formControlName="userNameOrEmail" />
       <div class="error" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-        <small *ngIf="loginForm.get('email')?.errors?.['required']">Email is required.</small>
-        <small *ngIf="loginForm.get('email')?.errors?.['email']">Invalid email format.</small>
+        <small *ngIf="loginForm.get('userNameOrEmail')?.errors?.['required']">Email is required.</small>
+        <small *ngIf="loginForm.get('userNameOrEmail')?.errors?.['email']">Invalid email format.</small>
       </div>
     </div>
 
