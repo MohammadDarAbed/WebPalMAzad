@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from '../../Services/auth.service';
 
 @Component({
   standalone: true,
@@ -10,4 +11,19 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './main-layout.component.html' ,
   styleUrls: ['./main-layout.component.scss'],
 })
-export class MainLayoutComponent {}
+export class MainLayoutComponent {
+  
+  showMenu: boolean = false;
+  constructor(private readonly authService: AuthService) {
+  authService.isLoggedIn$.subscribe(status => {
+    this.showMenu = status;
+  });
+}
+
+logout() {
+  // your logout logic
+  console.log('Logging out...');
+  // e.g., call authService.logout() and navigate to login
+  this.authService.logout();
+}
+}

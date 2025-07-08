@@ -12,9 +12,23 @@
   color: white;
   padding: $app-padding;
   flex-shrink: 0;
-
+  display: flex;
   text-align: left;
+  justify-content: space-between; /* pushes items to far left and far right */
+}
 
+.right-content,
+.left-content {
+  display: flex;
+  align-items: end;
+}
+
+button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .app-footer {

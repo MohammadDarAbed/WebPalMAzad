@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, tap, throwError } from 'rxjs';
 import { TokenService } from './token.service';
 
 export interface LoginRequest {
@@ -17,12 +17,17 @@ export interface AuthResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly apiUrl = 'https://localhost:5001/api/auth';
+  private isLoggedInSubject$: BehaviorSubject<boolean>;
+  readonly isLoggedIn$: Observable<boolean>;
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private tokenService: TokenService
-  ) {}
+  ) {
+    this.isLoggedInSubject$ = new BehaviorSubject<boolean>(this.isAuthenticated());
+    this.isLoggedIn$ = this.isLoggedInSubject$.asObservable();
+  }
 
   login(credentials: { userNameOrEmail: string; password: string }) {
     return this.http.post<{ accessToken: string; refreshToken: string }>(
@@ -31,6 +36,7 @@ export class AuthService {
     ).pipe(
       tap(response => {
         this.tokenService.setTokens(response.accessToken, response.refreshToken);
+        this.isLoggedInSubject$.next(true);
         this.router.navigate(['/home']);
       })
     );
@@ -42,6 +48,7 @@ export class AuthService {
       this.http.post(`${this.apiUrl}/logout`, { refreshToken }).subscribe();
     }
     this.tokenService.clear();
+    this.isLoggedInSubject$.next(false);
     this.router.navigate(['/auth/login']);
   }
 
