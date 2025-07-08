@@ -1,0 +1,1 @@
+madge --circular src/ | to check if there is any circular dependency
