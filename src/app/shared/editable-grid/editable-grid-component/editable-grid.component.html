@@ -1,48 +1,13 @@
 <div class="table-header">
-  <div class="table-header-bar">
-    <!-- Left: Column drag-and-drop -->
-    <div *ngIf="config.dragDropColumns" class="table-columns-drag-container" cdkDropList cdkDropListOrientation="horizontal"
-      (cdkDropListDropped)="dropColumn($event)">
-      <div class="drag-column-header" *ngFor="let col of columnsWithStringKeys" cdkDrag>
-        {{ col.label }}
-      </div>
-    </div>
-
-    <!-- Right: Action buttons -->
-    <div class="top-table-actions">
-      <ng-container *ngIf="config.headerActionsTemplate; else defaultHeader">
-        <ng-template [ngTemplateOutlet]="config.headerActionsTemplate"></ng-template>
-      </ng-container>
-    </div>
-  </div>
-
-  <ng-template #defaultHeader>
-    <button mat-raised-button color="primary" *ngIf="config.editable && editingRowIndices.size > 0"
-      (click)="saveAllEdits()" style="margin-left: 8px;">
-      Save All
-    </button>
-    <button mat-raised-button color="primary" *ngIf="config.addNewRowEnabled" (click)="addNewRow()">
-      Add New Row
-    </button>
-    <button mat-raised-button color="accent" *ngIf="config.editable && editingRowIndices.size === 0"
-      (click)="startEditAll()" style="margin-left: 8px;">
-      Edit All
-    </button>
-    <button mat-raised-button color="warn" *ngIf="config.editable && editingRowIndices.size > 0"
-      (click)="cancelAllEdits()" style="margin-left: 8px;">
-      Cancel All
-    </button>
-  </ng-template>
+  Header
 </div>
-
 <!-- Main table -->
 <div class="table-wrapper">
-  <table mat-table [dataSource]="filteredData" class="mat-elevation-z8" cdkDropList
-    (cdkDropListDropped)="dropRow($event)">
+  <table mat-table [dataSource]="filteredData" class="mat-elevation-z8" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="dropColumn($event)" (cdkDropListDropped)="dropRow($event)">
+
     <!-- Dynamic columns -->
     <ng-container *ngFor="let col of columnsWithStringKeys" [matColumnDef]="col.stringKey">
-      <th mat-header-cell *matHeaderCellDef (click)="col.sortable ? onSort(col.stringKey) : null"
-        [class.sortable]="col.sortable">
+      <th mat-header-cell *matHeaderCellDef cdkDrag (click)="col.sortable ? onSort(col.stringKey) : null" [class.sortable]="col.sortable">
         <div class="header-cell-content">
           <span>{{ col.label }}</span>
           <span *ngIf="col.sortable" class="sort-indicator">
@@ -51,9 +16,16 @@
             <mat-icon *ngIf="sortColumn !== col.stringKey">unfold_more</mat-icon>
           </span>
         </div>
-        <input *ngIf="config.filterable && col.filterable" type="text" matInput class="filter-input"
-          placeholder="Filter" (click)="$event.stopPropagation()" [(ngModel)]="filters[col.stringKey]"
-          (ngModelChange)="onFilterChange(col.stringKey, $event)" />
+        <input
+          *ngIf="config.filterable && col.filterable"
+          type="text"
+          matInput
+          class="filter-input"
+          placeholder="Filter"
+          (click)="$event.stopPropagation()"
+          [(ngModel)]="filters[col.stringKey]"
+          (ngModelChange)="onFilterChange(col.stringKey, $event)"
+        />
       </th>
       <td mat-cell *matCellDef="let row; let i = index" [ngSwitch]="editingRowIndices.has(i) && config.editable">
         <ng-container *ngSwitchCase="true">
@@ -75,7 +47,7 @@
 
     <!-- Actions column -->
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <th mat-header-cell *matHeaderCellDef cdkDrag> Actions </th>
       <td mat-cell *matCellDef="let row; let i = index">
         <button mat-icon-button *ngIf="!editingRowIndices.has(i) && config.editable" (click)="startEdit(i)">
           <mat-icon>edit</mat-icon>
@@ -96,8 +68,7 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns.concat(['actions'])"></tr>
 
     <!-- Data rows -->
-    <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumns.concat(['actions'])" cdkDrag
-      cdkDragLockAxis="y" cdkDragBoundary=".mat-table" [cdkDragData]="row"></tr>
+    <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumns.concat(['actions'])" cdkDrag cdkDragLockAxis="y" cdkDragBoundary=".mat-table" [cdkDragData]="row"></tr>
 
     <!-- Footer row for totals -->
     <tr class="footer-row">
@@ -122,4 +93,43 @@
       </td>
     </tr>
   </table>
+</div>
+
+<div class="table-footer">
+  <ng-container *ngIf="config.headerActionsTemplate; else defaultHeader">
+    <ng-template [ngTemplateOutlet]="config.headerActionsTemplate"></ng-template>
+  </ng-container>
+
+  <ng-template #defaultHeader>
+    <button mat-raised-button color="primary" *ngIf="config.addNewRowEnabled" (click)="addNewRow()">
+      Add New Row
+    </button>
+    <button
+      mat-raised-button
+      color="accent"
+      *ngIf="config.editable && editingRowIndices.size === 0"
+      (click)="startEditAll()"
+      style="margin-left: 8px;"
+    >
+      Edit All
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      *ngIf="config.editable && editingRowIndices.size > 0"
+      (click)="saveAllEdits()"
+      style="margin-left: 8px;"
+    >
+      Save All
+    </button>
+    <button
+      mat-raised-button
+      color="warn"
+      *ngIf="config.editable && editingRowIndices.size > 0"
+      (click)="cancelAllEdits()"
+      style="margin-left: 8px;"
+    >
+      Cancel All
+    </button>
+  </ng-template>
 </div>

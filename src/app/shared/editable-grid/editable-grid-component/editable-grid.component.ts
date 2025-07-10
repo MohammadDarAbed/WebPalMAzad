@@ -156,7 +156,10 @@ export class EditableGridComponent<T> implements OnInit {
     if (!form || !form.valid) return;
     const editedRow = { ...this.filteredData[index], ...form.value };
     const originalIndex = this.data.indexOf(this.filteredData[index]);
-    this.data[originalIndex] = editedRow;
+    // Create a copy of data array to avoid mutating read-only array
+    const newData = [...this.data];
+    newData[originalIndex] = editedRow;
+    this.data = newData;
     this.dataChange.emit(this.data);
     this.rowEdited.emit({ index: originalIndex, row: editedRow });
     this.editingRowIndices.delete(index);
