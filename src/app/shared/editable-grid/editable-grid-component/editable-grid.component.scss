@@ -1,0 +1,105 @@
+.table-header {
+  background-color: #ccc;
+}
+
+.table-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* optional if responsiveness is needed */
+}
+
+.table-columns-drag-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.drag-column-header {
+  padding: 6px 12px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  cursor: move;
+  user-select: none;
+}
+
+.top-table-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.table-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+  position: relative;
+}
+
+
+.filter-input {
+  width: 100px;
+  margin-top: 4px;
+  font-size: 12px;
+  padding: 2px 5px;
+}
+
+.header-cell-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.drag-column-header {
+  display: inline-block;
+  padding: 8px 12px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  cursor: move;
+  user-select: none;
+  margin-right: 4px;
+}
+
+.sortable-mat-icon{
+  font-size: 16px; 
+  line-height: 16px;
+}
+
+.table-container {
+  width: 100%;
+  max-height: 400px;
+  // overflow: auto;
+  // position: relative;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead tr {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #f5f5f5;
+}
+
+th {
+  position: sticky; // fix the header of table
+  top: 0;
+  z-index: 2;
+  background-color: #f5f5f5;
+  padding: 12px 10px;
+  font-weight: 600;
+  text-align: left;
+  font-size: 14px;
+  border-bottom: 2px solid #ddd;
+  border-right: 1px solid #e0e0e0;
+}
+
+th, td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+}
+
