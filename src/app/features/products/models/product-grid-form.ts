@@ -2,11 +2,13 @@ import { TableConfig } from "../../../shared/editable-grid/table-column";
 import { Product } from "./product.model";
 
 
-export function ProductGridConfig(){
-  return  {
+export function ProductGridConfig() {
+  return {
     columns: [
       { key: 'id', label: 'ID', type: 'readonly', sortable: true },
       { key: 'name', label: 'Name', type: 'text', sortable: true, filterable: true },
+      { key: 'price', label: 'Price', type: 'text', sortable: true, filterable: true },
+      { key: 'description', label: 'Description', type: 'text' },
       {
         key: 'category',
         label: 'Category',
@@ -19,7 +21,6 @@ export function ProductGridConfig(){
         sortable: true,
         filterable: true,
       },
-      { key: 'price', label: 'Price', type: 'text', sortable: true, filterable: true },
     ],
     addNewRowEnabled: true,
     editable: true,
