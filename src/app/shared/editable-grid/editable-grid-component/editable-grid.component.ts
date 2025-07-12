@@ -194,38 +194,14 @@ export class EditableGridComponent<T> implements OnInit {
     this.startEdit(this.data.length - 1);
   }
 
-  private findOriginalIndex(row: T): number {
-    for (let i = 0; i < this.data.length; i++) {
-      const dataRow = this.data[i];
-      if (this.areRowsEqual(dataRow, row)) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  private areRowsEqual(row1: any, row2: any): boolean {
-    const keys1 = Object.keys(row1) as (keyof T)[];
-    const keys2 = Object.keys(row2) as (keyof T)[];
-    if (keys1.length !== keys2.length) return false;
-    for (const key of keys1) {
-      if ((row1 as any)[key] !== (row2 as any)[key]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   deleteRow(index: number) {
-    const rowToDelete = this.orderedItems[index];
-    const originalIndex = this.findOriginalIndex(rowToDelete);
+  const rowToDelete = this.orderedItems[index];
+  const rowId = this.trackById(index, rowToDelete);
 
-    if (originalIndex > -1) {
-      this.data = this.data.filter((_, i) => i !== originalIndex);
-      this.applyFilters();
-      this.dataChange.emit(this.data); // already notifies parent
-    }
-  }
+  this.data = this.data.filter(row => this.trackById(0, row) !== rowId);
+  this.applyFilters();
+  this.dataChange.emit(this.data);
+}
 
   // Handle row drag and drop
   dropRow(event: CdkDragDrop<T[]>) {
@@ -247,15 +223,15 @@ export class EditableGridComponent<T> implements OnInit {
   }
 
   // Handle column drag and drop
-  dropColumn(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.displayedColumns, event.previousIndex, event.currentIndex);
-    // Reorder columns config accordingly
-    const newColumnsOrder = this.displayedColumns.map(colKey =>
-      this.config.columns.find(c => c.key === colKey)!
-    );
-    this.config.columns = newColumnsOrder;
-    this.columnReordered.emit(this.config.columns);
-  }
+  // dropColumn(event: CdkDragDrop<string[]>) {
+  //   moveItemInArray(this.displayedColumns, event.previousIndex, event.currentIndex);
+  //   // Reorder columns config accordingly
+  //   const newColumnsOrder = this.displayedColumns.map(colKey =>
+  //     this.config.columns.find(c => c.key === colKey)!
+  //   );
+  //   this.config.columns = newColumnsOrder;
+  //   this.columnReordered.emit(this.config.columns);
+  // }
 
   // Save all edits
   saveAllEdits() {
@@ -280,5 +256,9 @@ export class EditableGridComponent<T> implements OnInit {
   cancelAllEdits() {
     this.editingRowIndices.clear();
     this.editingForms.clear();
+  }
+
+  trackById(index: number, item: T): any {
+    return (item as any).id ?? index;
   }
 }

@@ -61,9 +61,11 @@
     <!-- Header row -->
     <tr mat-header-row *matHeaderRowDef="displayedColumns.concat(['actions'])"></tr>
 
-    <!-- Data rows -->
-    <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumns.concat(['actions'])" cdkDrag
-      cdkDragLockAxis="y" cdkDragBoundary=".mat-table" [cdkDragData]="row"></tr>
+    <tr mat-row
+      *matRowDef="let row; let i = index; columns: displayedColumns.concat(['actions']); trackBy: trackById" cdkDrag
+      cdkDragLockAxis="y" cdkDragBoundary=".mat-table" [cdkDragData]="row">
+    </tr>
+
 
     <!-- Footer row for totals -->
     <tr class="footer-row">
