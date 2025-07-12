@@ -1,14 +1,10 @@
-<div class="product-list-container">
-  <h2>🛍️ Products</h2>
-
-  <div *ngIf="loading$ | async" class="loading">Loading products...</div>
-  <div *ngIf="error$ | async as error" class="error">Error: {{ error }}</div>
-
-  <ul *ngIf="(products$ | async)?.length">
-    <li *ngFor="let product of products$ | async">
-      <h3>{{ product.name }}</h3>
-      <p>{{ product.description }}</p>
-      <p><strong>Price:</strong> {{ product.price | currency: currency }}</p>
-    </li>
-  </ul>
-</div>
+<app-editable-grid
+  *ngIf="(products$ | async)?.length"
+  [config]="tableConfig"
+  [data]="(products$ | async) ?? []"
+  (dataChange)="onProductsChange($event)"
+  (rowAdded)="onProductAdded($event)"
+  (rowEdited)="onProductEdited($event)"
+  (rowReordered)="onProductReordered($event)"
+  (columnReordered)="onColumnReordered($event)">
+</app-editable-grid>

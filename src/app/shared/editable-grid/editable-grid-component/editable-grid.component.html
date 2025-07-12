@@ -1,0 +1,117 @@
+<div class="table-header">
+  Header
+</div>
+<!-- Main table -->
+<div class="table-wrapper">
+  <table mat-table [dataSource]="orderedItems" class="mat-elevation-z8" cdkDropList cdkDropListOrientation="horizontal"
+    (cdkDropListDropped)="dropRow($event)">
+
+    <!-- Dynamic columns -->
+    <ng-container *ngFor="let col of config.columns" [matColumnDef]="col.key">
+      <th mat-header-cell *matHeaderCellDef cdkDrag (click)="col.sortable ? onSort(col.key) : null">
+        <div class="header-cell-content">
+          <span>{{ col.label }}</span>
+          <span *ngIf="col.sortable">
+            <mat-icon *ngIf="sortColumn === col.key && sortDirection === 'asc'">arrow_upward</mat-icon>
+            <mat-icon *ngIf="sortColumn === col.key && sortDirection === 'desc'">arrow_downward</mat-icon>
+            <mat-icon *ngIf="sortColumn !== col.key" [class.sortable]="col.sortable">unfold_more</mat-icon>
+          </span>
+        </div>
+        <input *ngIf="config.filterable && col.filterable" type="text" matInput class="filter-input"
+          placeholder="Filter" (click)="$event.stopPropagation()" [(ngModel)]="filters[col.key]"
+          (ngModelChange)="onFilterChange(col.key, $event)" />
+      </th>
+      <td mat-cell *matCellDef="let row; let i = index" [ngSwitch]="editingRowIndices.has(i) && config.editable">
+        <ng-container *ngSwitchCase="true">
+          <ng-container *ngIf="editingForms.get(i) as formGroup">
+            <ng-container [formGroup]="formGroup" [ngSwitch]="col.type">
+              <input *ngSwitchCase="'text'" matInput [formControlName]="col.key" />
+              <mat-select *ngSwitchCase="'select'" [formControlName]="col.key">
+                <mat-option *ngFor="let opt of col.options" [value]="opt.value">{{ opt.label }}</mat-option>
+              </mat-select>
+              <span *ngSwitchDefault>{{ getRowValue(row, col.key) }}</span>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          {{ getRowValue(row, col.key) }}
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <!-- Actions column -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef cdkDrag> Actions </th>
+      <td mat-cell *matCellDef="let row; let i = index">
+        <button mat-icon-button *ngIf="!editingRowIndices.has(i) && config.editable" (click)="startEdit(i)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="editingRowIndices.has(i)" (click)="saveEdit(i)">
+          <mat-icon>save</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="editingRowIndices.has(i)" (click)="cancelEdit(i)">
+          <mat-icon>cancel</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteRow(i)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Header row -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns.concat(['actions'])"></tr>
+
+    <tr mat-row
+      *matRowDef="let row; let i = index; columns: displayedColumns.concat(['actions']); trackBy: trackById" cdkDrag
+      cdkDragLockAxis="y" cdkDragBoundary=".mat-table" [cdkDragData]="row">
+    </tr>
+
+
+    <!-- Footer row for totals -->
+    <tr class="footer-row">
+      <td [attr.colspan]="displayedColumns.length + 1" class="footer-cell">
+        <div class="footer-content">
+          <div class="totals">
+            <span>Total(s)</span>
+            <!-- Add total values here, e.g. -->
+            <span class="total-value">Currency</span>
+            <span class="total-value">0.00</span>
+            <span class="total-value">0.00</span>
+            <span class="total-value">0.00</span>
+          </div>
+          <div class="actions">
+            <button mat-stroked-button color="primary" (click)="saveAllEdits()">Save</button>
+            <button mat-stroked-button color="warn" (click)="cancelAllEdits()">Cancel</button>
+            <button mat-icon-button color="primary" (click)="addNewRow()" aria-label="Add row">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div class="table-footer">
+  <ng-container *ngIf="config.headerActionsTemplate; else defaultHeader">
+    <ng-template [ngTemplateOutlet]="config.headerActionsTemplate"></ng-template>
+  </ng-container>
+
+  <ng-template #defaultHeader>
+    <button mat-raised-button color="primary" *ngIf="config.addNewRowEnabled" (click)="addNewRow()">
+      Add New Row
+    </button>
+    <button mat-raised-button color="accent" *ngIf="config.editable && editingRowIndices.size === 0"
+      (click)="startEditAll()" style="margin-left: 8px;">
+      Edit All
+    </button>
+    <button mat-raised-button color="primary" *ngIf="config.editable && editingRowIndices.size > 0"
+      (click)="saveAllEdits()" style="margin-left: 8px;">
+      Save All
+    </button>
+    <button mat-raised-button color="warn" *ngIf="config.editable && editingRowIndices.size > 0"
+      (click)="cancelAllEdits()" style="margin-left: 8px;">
+      Cancel All
+    </button>
+  </ng-template>
+</div>
