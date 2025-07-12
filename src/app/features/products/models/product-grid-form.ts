@@ -23,7 +23,7 @@ export function ProductGridConfig(){
     ],
     addNewRowEnabled: true,
     editable: true,
-    sortable: true,
+    sortable: false,
     filterable: true,
     dragDropRows: true,
     dragDropColumns: true,

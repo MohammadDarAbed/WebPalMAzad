@@ -2,7 +2,7 @@ import { TemplateRef } from "@angular/core";
 
 // Represents a single column definition
 export interface TableColumn<T = any> {
-  key: keyof T | string;            // property name in row data
+  key: string;            // property name in row data
   label: string;                    // header label
   type?: 'readonly' | 'text' | 'select';  // input type
   options?: { value: any; label: string }[]; // for select dropdown
