@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
 import { TableColumn, TableConfig } from '../../../../shared/editable-grid/table-column';
 import { ProductGridConfig } from '../../models/product-grid-form';
 import { EditableGridComponent } from '../../../../shared/editable-grid/editable-grid-component/editable-grid.component';
-
 @Component({
   standalone: true,
   selector: 'app-product-list',
@@ -45,9 +44,14 @@ export class ProductListComponent implements OnInit {
   }
 
   onProductAdded(newProduct: Product) {
+    this.store.dispatch(ProductActions.createProduct({product: newProduct}));
     console.log('Product added:', newProduct);
   }
 
+    onProductDeleted(deletedProduct: Product) {
+    this.store.dispatch(ProductActions.deleteProduct({id: deletedProduct.id}));
+    console.log('Product deleted:', deletedProduct);
+  }
   onProductEdited(event: { index: number; row: any }) {
     console.log(`Product at index ${event.index} edited:`, event.row);
     this.store.dispatch(ProductActions.updateProduct({ product: event.row }));

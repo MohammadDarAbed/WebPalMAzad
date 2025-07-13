@@ -9,6 +9,7 @@ export function ProductGridConfig() {
       { key: 'name', label: 'Name', type: 'text', sortable: true, filterable: true },
       { key: 'price', label: 'Price', type: 'text', sortable: true, filterable: true },
       { key: 'description', label: 'Description', type: 'text' },
+      { key: 'productQR', label: 'Product QR', type: 'text' },
       {
         key: 'category',
         label: 'Category',

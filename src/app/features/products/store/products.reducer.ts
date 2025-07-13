@@ -20,7 +20,8 @@ export const initialState: ProductState = {
 
 export const productsReducer = createReducer(
   initialState,
-  on(ProductActions.loadProducts, (state) => ({
+  on(ProductActions.loadProducts, 
+    ProductActions.loadProductById, (state) => ({
     ...state,
     loading: true,
     error: null
@@ -31,9 +32,40 @@ export const productsReducer = createReducer(
     products,
     totalResults: products.length
   })),
-  on(ProductActions.loadProductsFailure, (state, { error }) => ({
+  on(ProductActions.loadProductsFailure,
+    ProductActions.loadProductByIdFailure,
+    ProductActions.createProductFailure,
+    ProductActions.updateProductFailure,
+    ProductActions.deleteProductFailure,
+    (state, { error }) => ({
+      ...state,
+      loading: false,
+      error,
+    })),
+  on(ProductActions.loadProductByIdSuccess, (state, { product }) => ({
     ...state,
     loading: false,
-    error,
-  }))
+    product,
+    totalResults: 1
+  })),
+  on(ProductActions.createProductSuccess, (state, { product }) => ({
+    ...state,
+    loading: false,
+    products: [...state.products, product],
+    totalResults: state.totalResults + 1,
+    error: null
+  })),
+on(ProductActions.updateProductSuccess, (state, { product }) => ({
+  ...state,
+  loading: false,
+  products: state.products.map(p => p.id === product.id ? product : p),
+  error: null
+})),
+on(ProductActions.deleteProductSuccess, (state, { id }) => ({
+  ...state,
+  loading: false,
+  products: state.products.filter(p => p.id !== id), // remove the product
+  totalResults: state.totalResults - 1,
+  error: null
+})),
 );
