@@ -40,6 +40,7 @@ export class EditableGridComponent<T> implements OnInit {
 
   @Output() dataChange = new EventEmitter<T[]>();
   @Output() rowAdded = new EventEmitter<T>();
+  @Output() rowDeleted = new EventEmitter<T>();
   @Output() rowEdited = new EventEmitter<{ index: number; row: T }>();
   @Output() rowReordered = new EventEmitter<T[]>();
   @Output() columnReordered = new EventEmitter<TableColumn<T>[]>();
@@ -53,6 +54,9 @@ export class EditableGridComponent<T> implements OnInit {
   filters: { [key: string]: string } = {};
 
   orderedItems: T[] = [];
+
+  // Track indices of newly added rows
+  newRowIndices: Set<number> = new Set();
 
   // Sorting state
   sortColumn: string | null = null;
@@ -161,7 +165,12 @@ export class EditableGridComponent<T> implements OnInit {
     newData[originalIndex] = editedRow;
     this.orderedItems = newData;
     this.dataChange.emit(this.orderedItems);
-    this.rowEdited.emit({ index: originalIndex, row: editedRow });
+    if (this.newRowIndices.has(index)) {
+      this.rowAdded.emit(editedRow);
+      this.newRowIndices.delete(index);
+    } else {
+      this.rowEdited.emit({ index: originalIndex, row: editedRow });
+    }
     this.editingRowIndices.delete(index);
     this.editingForms.delete(index);
     this.applyFilters();
@@ -185,8 +194,8 @@ export class EditableGridComponent<T> implements OnInit {
     });
 
     this.orderedItems = [...this.orderedItems, newRow];
+    this.newRowIndices.add(this.orderedItems.length - 1);
     this.dataChange.emit(this.orderedItems);
-    this.rowAdded.emit(newRow);
 
     this.applyFilters();
 
@@ -202,6 +211,7 @@ deleteRow(index: number) {
 
   this.applyFilters(); // Recompute orderedItems if needed
   this.dataChange.emit(this.orderedItems);
+  this.rowDeleted.emit(rowToDelete);
 }
   // Handle row drag and drop
   dropRow(event: CdkDragDrop<T[]>) {
@@ -242,7 +252,12 @@ deleteRow(index: number) {
         const editedRow = { ...this.orderedItems[index], ...form.value };
         const originalIndex = this.orderedItems.indexOf(this.orderedItems[index]);
         newData[originalIndex] = editedRow;
-        this.rowEdited.emit({ index: originalIndex, row: editedRow });
+        if (this.newRowIndices.has(index)) {
+          this.rowAdded.emit(editedRow);
+          this.newRowIndices.delete(index);
+        } else {
+          this.rowEdited.emit({ index: originalIndex, row: editedRow });
+        }
       }
     });
     this.orderedItems = newData;

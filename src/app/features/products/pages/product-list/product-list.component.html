@@ -4,6 +4,7 @@
   [data]="(products$ | async) ?? []"
   (dataChange)="onProductsChange($event)"
   (rowAdded)="onProductAdded($event)"
+  (rowDeleted)="onProductDeleted($event)"
   (rowEdited)="onProductEdited($event)"
   (rowReordered)="onProductReordered($event)"
   (columnReordered)="onColumnReordered($event)">
