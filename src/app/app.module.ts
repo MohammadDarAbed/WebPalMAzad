@@ -10,6 +10,8 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from './environments/environment';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { notificationReducer } from './shared/notifications/store/notification.reducer';
+import { NotificationEffects } from './shared/notifications/store/notification.effects';
 
 @NgModule({
   declarations: [
@@ -20,8 +22,8 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
     AppRoutingModule,
     MainLayoutComponent,
     // NgRx immports:
-    StoreModule.forRoot({}),
-    EffectsModule.forRoot(),
+    StoreModule.forRoot({ notificationState: notificationReducer }),
+    EffectsModule.forRoot([NotificationEffects]),
     HttpClientModule,
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states

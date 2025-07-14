@@ -1,0 +1,8 @@
+<div class="notification-container">
+  <div *ngFor="let notification of notifications$ | async; trackBy: trackById" class="notification"
+    [ngClass]="notificationTypeClass(notification.type)">
+    <button *ngIf="!notification.autoDisappear && notification.id" class="close-btn"
+      (click)="removeNotification(notification.id)"><mat-icon>close</mat-icon></button>
+    <div class="notification-message">{{ notification.text }}</div>
+  </div>
+</div>

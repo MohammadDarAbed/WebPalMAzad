@@ -3,11 +3,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from '../../Services/auth.service';
+import { NotificationSnackbarComponent } from '../../../shared/notifications/notification-snackbar.component';
 
 @Component({
   standalone: true,
   selector: 'app-main-layout',
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, NotificationSnackbarComponent],
   templateUrl: './main-layout.component.html' ,
   styleUrls: ['./main-layout.component.scss'],
 })
