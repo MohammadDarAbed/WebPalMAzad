@@ -61,10 +61,12 @@ export class EditableGridComponent<T> implements OnInit {
   // Sorting state
   sortColumn: string | null = null;
   sortDirection: 'asc' | 'desc' | null = null;
+  actionsColumnWidthl?: number = 120;
 
   ngOnInit() {
     this.displayedColumns = this.config.columns.map(col => String(col.key));
     this.orderedItems = this.data;
+    this.actionsColumnWidthl = this.config.actionsColumnWidth;
   }
 
   // Filtering rows based on filters object
@@ -203,16 +205,16 @@ export class EditableGridComponent<T> implements OnInit {
     this.startEdit(this.orderedItems.length - 1);
   }
 
-deleteRow(index: number) {
-  const rowToDelete = this.orderedItems[index];
-  // Directly remove the item from `data` by object reference
-  const newData = this.orderedItems.filter(row => row !== rowToDelete);
-  this.orderedItems = newData;
+  deleteRow(index: number) {
+    const rowToDelete = this.orderedItems[index];
+    // Directly remove the item from `data` by object reference
+    const newData = this.orderedItems.filter(row => row !== rowToDelete);
+    this.orderedItems = newData;
 
-  this.applyFilters(); // Recompute orderedItems if needed
-  this.dataChange.emit(this.orderedItems);
-  this.rowDeleted.emit(rowToDelete);
-}
+    this.applyFilters(); // Recompute orderedItems if needed
+    this.dataChange.emit(this.orderedItems);
+    this.rowDeleted.emit(rowToDelete);
+  }
   // Handle row drag and drop
   dropRow(event: CdkDragDrop<T[]>) {
     if (this.orderedItems.length === 0) return;
