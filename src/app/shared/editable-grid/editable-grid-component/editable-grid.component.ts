@@ -15,6 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
 import { TableColumn, TableConfig } from '../table-column';
+import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-editable-grid',
@@ -35,6 +37,9 @@ import { TableColumn, TableConfig } from '../table-column';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditableGridComponent<T> implements OnInit {
+
+  constructor(private readonly dialog: MatDialog) { }
+
   @Input() config!: TableConfig<T>;
   @Input() data: T[] = [];
 
@@ -206,14 +211,28 @@ export class EditableGridComponent<T> implements OnInit {
   }
 
   deleteRow(index: number) {
-    const rowToDelete = this.orderedItems[index];
-    // Directly remove the item from `data` by object reference
-    const newData = this.orderedItems.filter(row => row !== rowToDelete);
-    this.orderedItems = newData;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      disableClose: true,
+      width: '400px',
+      data: {
+        title: 'Delete Row Confirmation',
+        message: 'Are you sure you want to delete this item? This action cannot be undone.'
+      }
+    });
 
-    this.applyFilters(); // Recompute orderedItems if needed
-    this.dataChange.emit(this.orderedItems);
-    this.rowDeleted.emit(rowToDelete);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const rowToDelete = this.orderedItems[index];
+        // Directly remove the item from `data` by object reference
+        const newData = this.orderedItems.filter(row => row !== rowToDelete);
+        this.orderedItems = newData;
+
+        this.applyFilters(); // Recompute orderedItems if needed
+        this.dataChange.emit(this.orderedItems);
+        this.rowDeleted.emit(rowToDelete);
+
+      }
+    });
   }
   // Handle row drag and drop
   dropRow(event: CdkDragDrop<T[]>) {

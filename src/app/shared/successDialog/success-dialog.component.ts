@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { MatDialogModule } from '@angular/material/dialog'; // ✅ Import the Material Dialog module
+import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-success-dialog',
-  standalone: true, // ✅ important if using standalone
-  imports: [MatDialogModule], // ✅ include dialog module here
+  standalone: true,
+  imports: [MatDialogModule],
   templateUrl: './success-dialog.component.html'
 })
 export class SuccessDialogComponent {
