@@ -5,11 +5,11 @@ import { Product } from "./product.model";
 export function ProductGridConfig() {
   return {
     columns: [
-      { key: 'id', label: 'ID', type: 'readonly', sortable: true },
-      { key: 'name', label: 'Name', type: 'text', sortable: true, filterable: true },
-      { key: 'price', label: 'Price', type: 'text', sortable: true, filterable: true },
-      { key: 'description', label: 'Description', type: 'text' },
-      { key: 'productQR', label: 'Product QR', type: 'text' },
+      { key: 'id', label: 'ID', type: 'readonly', sortable: true, width: 30 },
+      { key: 'name', label: 'Name', type: 'text', sortable: true, filterable: true, width: 120 },
+      { key: 'price', label: 'Price', type: 'text', sortable: true, filterable: true, width: 120 },
+      { key: 'description', label: 'Description', type: 'text', width: 240 },
+      { key: 'productQR', label: 'Product QR', type: 'text', width: 120 },
       {
         key: 'category',
         label: 'Category',
@@ -21,6 +21,7 @@ export function ProductGridConfig() {
         ],
         sortable: true,
         filterable: true,
+        width: 120        
       },
     ],
     addNewRowEnabled: true,
@@ -29,5 +30,6 @@ export function ProductGridConfig() {
     filterable: true,
     dragDropRows: true,
     dragDropColumns: true,
+    actionsColumnWidth: 120
   } as TableConfig<Product>;
 }
