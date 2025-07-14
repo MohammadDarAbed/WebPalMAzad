@@ -5,6 +5,8 @@ import { of } from 'rxjs';
 
 import * as ProductActions from './products.actions';
 import { ProductsService } from '../services/products.service';
+import * as NotificationActions from '../../../shared/notifications/store/notification.actions';
+import { NotificationModel, NotificationType } from '../../../shared/notifications/snackbar.model';
 
 @Injectable()
 export class ProductsEffects {
@@ -13,6 +15,9 @@ export class ProductsEffects {
   createProduct$;
   updateProduct$;
   deleteProduct$;
+  createProductSuccess$;
+  updateProductSuccess$;
+  deleteProductSuccess$;
 
   constructor(
     private readonly actions$: Actions,
@@ -63,6 +68,21 @@ export class ProductsEffects {
       )
     );
 
+    this.createProductSuccess$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(ProductActions.createProductSuccess),
+        mergeMap((action) => {
+          const notification: NotificationModel = {
+            id: Date.now(),
+            text: `Product created successfully: ${action.product.name}`,
+            type: NotificationType.Information,
+            autoDisappear: true,
+          };
+          return [NotificationActions.showNotification({ notification })];
+        })
+      )
+    );
+
     this.updateProduct$ = createEffect(() =>
       this.actions$.pipe(
         ofType(ProductActions.updateProduct),
@@ -75,6 +95,21 @@ export class ProductsEffects {
             )
           )
         )
+      )
+    );
+
+    this.updateProductSuccess$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(ProductActions.updateProductSuccess),
+        mergeMap((action) => {
+          const notification: NotificationModel = {
+            id: Date.now(),
+            text: `Product updated successfully: ${action.product.name}`,
+            type: NotificationType.Information,
+            autoDisappear: true,
+          };
+          return [NotificationActions.showNotification({ notification })];
+        })
       )
     );
 
@@ -93,6 +128,20 @@ export class ProductsEffects {
       )
     );
 
+    this.deleteProductSuccess$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(ProductActions.deleteProductSuccess),
+        mergeMap(() => {
+          const notification: NotificationModel = {
+            id: Date.now(),
+            text: `Product deleted successfully!`,
+            type: NotificationType.Information,
+            autoDisappear: true,
+          };
+          return [NotificationActions.showNotification({ notification })];
+        })
+      )
+    );
 
   }
 }
