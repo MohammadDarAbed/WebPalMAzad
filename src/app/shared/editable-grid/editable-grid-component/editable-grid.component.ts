@@ -17,7 +17,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { TableColumn, TableConfig } from '../table-column';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 @Component({
   selector: 'app-editable-grid',
   standalone: true,
@@ -31,6 +33,9 @@ import { MatDialog } from '@angular/material/dialog';
     MatButtonModule,
     DragDropModule,
     MatIconModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   templateUrl: './editable-grid.component.html',
   styleUrls: ['./editable-grid.component.scss'],
@@ -70,13 +75,13 @@ export class EditableGridComponent<T> implements OnInit {
 
   ngOnInit() {
     this.displayedColumns = this.config.columns.map(col => String(col.key));
-    this.orderedItems = this.data;
+    this.orderedItems = [...this.data];
     this.actionsColumnWidthl = this.config.actionsColumnWidth;
   }
 
   // Filtering rows based on filters object
   applyFilters() {
-    this.orderedItems = this.orderedItems.filter(row =>
+    this.orderedItems = this.data.filter(row =>
       this.config.columns.every(col => {
         const filterValue = this.filters[String(col.key)];
         if (!filterValue) return true; // no filter on this column
@@ -164,6 +169,7 @@ export class EditableGridComponent<T> implements OnInit {
   // Save edited single row
   saveEdit(index: number) {
     const form = this.editingForms.get(index);
+    console.warn('Invalid form:', form?.value, form?.get('date')?.errors);
     if (!form || !form.valid) return;
     const editedRow = { ...this.orderedItems[index], ...form.value };
     const originalIndex = this.orderedItems.indexOf(this.orderedItems[index]);
@@ -180,6 +186,7 @@ export class EditableGridComponent<T> implements OnInit {
     }
     this.editingRowIndices.delete(index);
     this.editingForms.delete(index);
+    this.refreshData();
     this.applyFilters();
   }
 
@@ -203,6 +210,7 @@ export class EditableGridComponent<T> implements OnInit {
     this.orderedItems = [...this.orderedItems, newRow];
     this.newRowIndices.add(this.orderedItems.length - 1);
     this.dataChange.emit(this.orderedItems);
+    this.refreshData();
 
     this.applyFilters();
 
@@ -210,29 +218,39 @@ export class EditableGridComponent<T> implements OnInit {
     this.startEdit(this.orderedItems.length - 1);
   }
 
+  deleteRowProcess(index: number) {
+    const rowToDelete = this.orderedItems[index];
+    // Directly remove the item from `data` by object reference
+    const newData = this.orderedItems.filter(row => row !== rowToDelete);
+    this.orderedItems = newData;
+
+    this.dataChange.emit(this.orderedItems);
+    this.rowDeleted.emit(rowToDelete);
+    this.refreshData();
+    this.applyFilters(); // Recompute orderedItems if needed
+
+  }
+
   deleteRow(index: number) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      disableClose: true,
-      width: '400px',
-      data: {
-        title: 'Delete Row Confirmation',
-        message: 'Are you sure you want to delete this item? This action cannot be undone.'
-      }
-    });
+    if (this.config.useDialogToDelete) {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        disableClose: true,
+        width: '400px',
+        data: {
+          title: 'Delete Row Confirmation',
+          message: 'Are you sure you want to delete this item? This action cannot be undone.'
+        }
+      });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const rowToDelete = this.orderedItems[index];
-        // Directly remove the item from `data` by object reference
-        const newData = this.orderedItems.filter(row => row !== rowToDelete);
-        this.orderedItems = newData;
-
-        this.applyFilters(); // Recompute orderedItems if needed
-        this.dataChange.emit(this.orderedItems);
-        this.rowDeleted.emit(rowToDelete);
-
-      }
-    });
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.deleteRowProcess(index);
+        }
+      });
+    }
+    else {
+      this.deleteRowProcess(index);
+    }
   }
   // Handle row drag and drop
   dropRow(event: CdkDragDrop<T[]>) {
@@ -285,6 +303,7 @@ export class EditableGridComponent<T> implements OnInit {
     this.dataChange.emit(this.orderedItems);
     this.editingRowIndices.clear();
     this.editingForms.clear();
+    this.refreshData();
     this.applyFilters();
   }
 
@@ -296,5 +315,9 @@ export class EditableGridComponent<T> implements OnInit {
 
   trackById(index: number, item: T): any {
     return (item as any).id ?? index;
+  }
+
+  refreshData() {
+    this.data = [...this.orderedItems];
   }
 }
