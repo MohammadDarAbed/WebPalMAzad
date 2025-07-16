@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
 import { TableColumn, TableConfig } from '../../../../shared/editable-grid/table-column';
 import { ProductGridConfig } from '../../models/product-grid-form';
 import { EditableGridComponent } from '../../../../shared/editable-grid/editable-grid-component/editable-grid.component';
+import { ValidatorFn, Validators } from '@angular/forms';
+import { CustomValidators } from '../../../../shared/editable-grid/Validations/validators.custom';
 
 @Component({
   standalone: true,
@@ -23,6 +25,36 @@ export class ProductListComponent implements OnInit {
   error$: Observable<any>;
   currency: string = "$";
   products: Product[] = [];
+
+  validators: { [key: string]: { validators: ValidatorFn[], messages?: { [key: string]: string } } } = {
+    name: {
+      validators: [Validators.required, Validators.maxLength(50)],
+      messages: {
+        required: "Name is required.",
+        maxlength: "This field must be at most 50 characters.",
+      }
+    },
+    price: {
+      validators: [Validators.required, Validators.min(0)],
+      messages: {
+        required: "Price is required.",
+        min: "Price must be greater than 0.",
+      }
+    },
+    description: {
+      validators: [Validators.maxLength(500)],
+      messages: {
+        maxlength: "This field must be at most 500 characters.",
+      }
+    },
+    productQR: {
+      validators: [CustomValidators.noSpaces()],
+      messages: {
+        noSpaces: "Name must not contain spaces."
+      }
+    }
+  };
+
   constructor(private store: Store) {
     this.products$ = this.store.select(selectAllProducts);
     this.loading$ = this.store.select(selectProductLoading);
@@ -33,6 +65,7 @@ export class ProductListComponent implements OnInit {
     this.store.dispatch(ProductActions.loadProducts());
     this.products$.subscribe(products => {
       this.products = products;
+      console.log("OnInit: ", products);
     });
   }
 
@@ -40,12 +73,20 @@ export class ProductListComponent implements OnInit {
 
 
   onProductsChange(updated: any) {
-    this.tableUpdate();
-    console.log('Products updated:', this.products);
+    console.log("OnChange: ", updated);
   }
 
-  onProductAdded(newProduct: Product) {
-    this.store.dispatch(ProductActions.createProduct({ product: newProduct }));
+  onProductAdded(newProduct: any) {
+    var product: Product = {
+      id: 0,
+      name: newProduct.name,
+      price: newProduct.price,
+      description: newProduct.description,
+      categoryId: newProduct.categoryId,
+      isDeleted: false,
+      productQR: newProduct.productQR
+    };
+    this.store.dispatch(ProductActions.createProduct({ product: product }));
   }
 
   onProductDeleted(deletedProduct: Product) {
@@ -53,7 +94,16 @@ export class ProductListComponent implements OnInit {
   }
 
   onProductEdited(event: { index: number; row: any }) {
-    this.store.dispatch(ProductActions.updateProduct({ product: event.row }));
+    var product: Product = {
+      id: event.row.id,
+      name: event.row.name,
+      price: event.row.price,
+      description: event.row.description,
+      categoryId: event.row.categoryId,
+      isDeleted: false,
+      productQR: event.row.productQR
+    };
+    this.store.dispatch(ProductActions.updateProduct({ product: product }));
   }
 
   onProductReordered(reordered: any) {
@@ -63,11 +113,4 @@ export class ProductListComponent implements OnInit {
   onColumnReordered(newOrder: TableColumn<Product>[]) {
     console.log('Columns reordered:', newOrder);
   }
-
-  tableUpdate() {
-    this.products$.subscribe(products =>
-      this.products = products
-    );
-  }
-
 }

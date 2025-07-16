@@ -1,8 +1,11 @@
-.table-header {
-  background-color: #ccc;
-  height: 5%;
-  justify-content: space-between;
-  overflow-x: auto;
+.invalid {
+  border: 1px solid red;
+}
+
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin-top: 2px;
 }
 
 .table-footer {

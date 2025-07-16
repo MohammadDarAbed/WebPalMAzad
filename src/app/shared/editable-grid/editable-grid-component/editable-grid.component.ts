@@ -5,6 +5,8 @@ import {
   EventEmitter,
   ChangeDetectionStrategy,
   OnInit,
+  Pipe,
+  PipeTransform,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
@@ -20,6 +22,23 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+
+@Pipe({
+  name: 'rowValue',
+  pure: true
+})
+export class RowValuePipe implements PipeTransform {
+  counter = 0;
+  transform(row: any, key: string, columns: TableColumn<any>[]): any {
+    const col = columns.find(c => c.key === key);
+    if (col?.type === 'select' && col.options) {
+      const option = col.options.find(opt => opt.value === row[key]);
+      return option ? option.label : row[key];
+    }
+    return row[key];
+  }
+}
+
 @Component({
   selector: 'app-editable-grid',
   standalone: true,
@@ -36,17 +55,20 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatFormFieldModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    RowValuePipe
   ],
   templateUrl: './editable-grid.component.html',
   styleUrls: ['./editable-grid.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class EditableGridComponent<T> implements OnInit {
 
   constructor(private readonly dialog: MatDialog) { }
 
   @Input() config!: TableConfig<T>;
   @Input() data: T[] = [];
+  @Input() public validators: any = {};
 
   @Output() dataChange = new EventEmitter<T[]>();
   @Output() rowAdded = new EventEmitter<T>();
@@ -54,6 +76,7 @@ export class EditableGridComponent<T> implements OnInit {
   @Output() rowEdited = new EventEmitter<{ index: number; row: T }>();
   @Output() rowReordered = new EventEmitter<T[]>();
   @Output() columnReordered = new EventEmitter<TableColumn<T>[]>();
+  @Output() cellValueChanged = new EventEmitter<{ row: any; key: string; value: any }>();
 
   displayedColumns: string[] = [];
   // For editing, keep track of editing rows indices and forms
@@ -77,6 +100,27 @@ export class EditableGridComponent<T> implements OnInit {
     this.displayedColumns = this.config.columns.map(col => String(col.key));
     this.orderedItems = [...this.data];
     this.actionsColumnWidthl = this.config.actionsColumnWidth;
+  }
+
+  getErrorMessage(formGroup: FormGroup, key: string): string | null {
+    const control = formGroup.get(key);
+    if (!control || !control.errors) return null;
+
+    const errors = control.errors;
+    const validatorMessages = this.validators[key]?.messages || {};
+
+    for (const errorName in errors) {
+      if (validatorMessages[errorName]) {
+        if (errorName === 'max') {
+          return validatorMessages[errorName].replace('{max}', errors[errorName].max);
+        }
+        if (errorName === 'min') {
+          return validatorMessages[errorName].replace('{min}', errors[errorName].min);
+        }
+        return validatorMessages[errorName];
+      }
+    }
+    return null;
   }
 
   // Filtering rows based on filters object
@@ -134,8 +178,16 @@ export class EditableGridComponent<T> implements OnInit {
     });
   }
 
+  counter = 0;
   // In your component class
   getRowValue(row: any, key: string): any {
+    console.log("counter: ", this.counter++);
+    const col = this.config.columns.find(c => c.key === key);
+    if (col && col.type === 'select' && col.options) {
+      const option = col.options.find((opt: any) => opt.value === row[key]);
+      return option ? option.label : row[key];
+    }
+    // this.dataChange.emit({value: row, key: key} as any);
     return row[key];
   }
 
@@ -160,7 +212,8 @@ export class EditableGridComponent<T> implements OnInit {
     const group: any = {};
     this.config.columns.forEach(col => {
       if (col.type && col.type !== 'readonly') {
-        group[col.key] = new FormControl((row as any)[col.key]);
+        const validatorsForKey = this.validators[col.key] || [];
+        group[col.key] = new FormControl((row as any)[col.key], validatorsForKey);
       }
     });
     return new FormGroup(group);
@@ -168,26 +221,26 @@ export class EditableGridComponent<T> implements OnInit {
 
   // Save edited single row
   saveEdit(index: number) {
-    const form = this.editingForms.get(index);
-    console.warn('Invalid form:', form?.value, form?.get('date')?.errors);
-    if (!form || !form.valid) return;
-    const editedRow = { ...this.orderedItems[index], ...form.value };
-    const originalIndex = this.orderedItems.indexOf(this.orderedItems[index]);
-    // Create a copy of data array to avoid mutating read-only array
-    const newData = [...this.orderedItems];
-    newData[originalIndex] = editedRow;
-    this.orderedItems = newData;
-    this.dataChange.emit(this.orderedItems);
-    if (this.newRowIndices.has(index)) {
-      this.rowAdded.emit(editedRow);
-      this.newRowIndices.delete(index);
-    } else {
-      this.rowEdited.emit({ index: originalIndex, row: editedRow });
+    const success = this.saveRowEdits(index);
+    if (success) {
+      this.refreshData();
+      this.applyFilters();
     }
-    this.editingRowIndices.delete(index);
-    this.editingForms.delete(index);
-    this.refreshData();
-    this.applyFilters();
+  }
+
+  // Save all rows
+  saveAllEdits() {
+    let hasChanges = false;
+
+    this.editingRowIndices.forEach(index => {
+      const success = this.saveRowEdits(index);
+      if (success) hasChanges = true;
+    });
+
+    if (hasChanges) {
+      this.refreshData();
+      this.applyFilters();
+    }
   }
 
   // Cancel editing single row
@@ -209,7 +262,7 @@ export class EditableGridComponent<T> implements OnInit {
 
     this.orderedItems = [...this.orderedItems, newRow];
     this.newRowIndices.add(this.orderedItems.length - 1);
-    this.dataChange.emit(this.orderedItems);
+    // this.dataChange.emit(this.orderedItems);
     this.refreshData();
 
     this.applyFilters();
@@ -224,7 +277,6 @@ export class EditableGridComponent<T> implements OnInit {
     const newData = this.orderedItems.filter(row => row !== rowToDelete);
     this.orderedItems = newData;
 
-    this.dataChange.emit(this.orderedItems);
     this.rowDeleted.emit(rowToDelete);
     this.refreshData();
     this.applyFilters(); // Recompute orderedItems if needed
@@ -266,7 +318,6 @@ export class EditableGridComponent<T> implements OnInit {
     const newData = [...this.orderedItems];
     moveItemInArray(newData, prevDataIndex, currDataIndex);
     this.orderedItems = newData;
-    this.dataChange.emit(this.orderedItems);
     this.rowReordered.emit(this.orderedItems);
     this.applyFilters();
   }
@@ -282,31 +333,6 @@ export class EditableGridComponent<T> implements OnInit {
   //   this.columnReordered.emit(this.config.columns);
   // }
 
-  // Save all edits
-  saveAllEdits() {
-    const newData = [...this.orderedItems];
-    this.editingRowIndices.forEach(index => {
-      const form = this.editingForms.get(index);
-      if (form && form.valid) {
-        const editedRow = { ...this.orderedItems[index], ...form.value };
-        const originalIndex = this.orderedItems.indexOf(this.orderedItems[index]);
-        newData[originalIndex] = editedRow;
-        if (this.newRowIndices.has(index)) {
-          this.rowAdded.emit(editedRow);
-          this.newRowIndices.delete(index);
-        } else {
-          this.rowEdited.emit({ index: originalIndex, row: editedRow });
-        }
-      }
-    });
-    this.orderedItems = newData;
-    this.dataChange.emit(this.orderedItems);
-    this.editingRowIndices.clear();
-    this.editingForms.clear();
-    this.refreshData();
-    this.applyFilters();
-  }
-
   // Cancel all edits
   cancelAllEdits() {
     this.editingRowIndices.clear();
@@ -320,4 +346,45 @@ export class EditableGridComponent<T> implements OnInit {
   refreshData() {
     this.data = [...this.orderedItems];
   }
+
+  // Helpers:
+
+  private saveRowEdits(index: number): boolean {
+    const form = this.editingForms.get(index);
+    if (!form || !form.valid) return false;
+
+    const originalRow = this.orderedItems[index];
+    const updatedValues = form.value;
+    const originalRowObj = originalRow as Record<string, any>;
+    const updatedValuesObj = updatedValues as Record<string, any>;
+
+    if (!this.newRowIndices.has(index)) { // call cellValueChanged just in the edit mode not in add
+      const changedKeys = Object.keys(updatedValuesObj).filter(
+        key => updatedValuesObj[key] !== originalRowObj[key]
+      );
+      changedKeys.forEach(key => {
+        this.cellValueChanged.emit({
+          row: originalRow,
+          key,
+          value: updatedValuesObj[key]
+        });
+      });
+    }
+
+    const editedRow = { ...originalRow, ...updatedValues };
+    this.orderedItems[index] = editedRow;
+
+    if (this.newRowIndices.has(index)) { // Added new row
+      this.rowAdded.emit(editedRow);
+      this.newRowIndices.delete(index);
+    } else {                              // Edited existing row
+      const originalIndex = this.orderedItems.indexOf(originalRow);
+      this.rowEdited.emit({ index: originalIndex, row: editedRow });
+    }
+
+    this.editingRowIndices.delete(index);
+    this.editingForms.delete(index);
+    return true;
+  }
+
 }

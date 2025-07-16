@@ -4,6 +4,7 @@ export enum EditableGridCellType {
   select = 'select',
   readonly = 'readonly',
   text = "text",
+  number = "number",
   date = 'date',
   multiSelect = 'multiSelect',
   comboBox = 'comboBox',
@@ -13,7 +14,7 @@ export enum EditableGridCellType {
 export interface TableColumn<T = any> {
   key: string;            // property name in row data
   label: string;                    // header label
-  type?: EditableGridCellType  // input type
+  type: EditableGridCellType // input type
   options?: { value: any; label: string }[]; // for select dropdown
   sortable?: boolean;               // enable sorting
   filterable?: boolean;             // enable filtering

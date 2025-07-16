@@ -4,6 +4,7 @@ export interface Product {
   description: string;
   price: number;
   imageUrl?: string;
-  category: number;
+  categoryId: number;
   isDeleted: boolean;
+  productQR: string;
 }
