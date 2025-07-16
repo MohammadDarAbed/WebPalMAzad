@@ -27,20 +27,28 @@
         <ng-container *ngSwitchCase="true">
           <ng-container *ngIf="editingForms.get(i) as formGroup">
             <ng-container [formGroup]="formGroup" [ngSwitch]="col.type">
-              <input *ngSwitchCase="'text'" matInput [formControlName]="col.key" />
+              <input *ngSwitchCase="'text'" matInput [formControlName]="col.key"
+                [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
+              <input [type]="col.type || 'text'" min="0" *ngSwitchCase="'number'" matInput [formControlName]="col.key"
+                [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
               <input *ngSwitchCase="'readOnly'" matInput [formControlName]="col.key" [readonly]="true" />
-              <mat-select *ngSwitchCase="'select'" [formControlName]="col.key">
+              <mat-select *ngSwitchCase="'select'" [formControlName]="col.key"
+                [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)">
                 <mat-option *ngFor="let opt of col.options" [value]="opt.value">{{ opt.label }}</mat-option>
               </mat-select>
-              <!-- <input *ngSwitchCase="'date'" matInput [matDatepicker]="picker" [formControlName]="col.key" /> -->
+              <input *ngSwitchCase="'date'" matInput [matDatepicker]="picker" [formControlName]="col.key" />
               <mat-datepicker-toggle *ngSwitchCase="'date'" matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
-              <span *ngSwitchDefault>{{ getRowValue(row, col.key) }}</span>
+              <span *ngSwitchDefault>{{ row | rowValue:col.key:config.columns }}</span>
+              <div class="error-text"
+                *ngIf="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)">
+                {{ getErrorMessage(formGroup, col.key) }}
+              </div>
             </ng-container>
           </ng-container>
         </ng-container>
         <ng-container *ngSwitchDefault>
-          {{ getRowValue(row, col.key) }}
+         {{ row | rowValue:col.key:config.columns }}
         </ng-container>
       </td>
     </ng-container>
