@@ -27,7 +27,7 @@
         <ng-container *ngSwitchCase="true">
           <ng-container *ngIf="editingForms.get(i) as formGroup">
             <ng-container [formGroup]="formGroup" [ngSwitch]="col.type">
-              <input *ngSwitchCase="'text'" matInput [formControlName]="col.key"
+              <input *ngSwitchCase="'text'" matInput [formControlName]="col.key" #firstEditableInput 
                 [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
               <input [type]="col.type || 'text'" min="0" *ngSwitchCase="'number'" matInput [formControlName]="col.key"
                 [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />

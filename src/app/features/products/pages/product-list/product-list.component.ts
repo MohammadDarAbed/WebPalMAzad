@@ -52,6 +52,12 @@ export class ProductListComponent implements OnInit {
       messages: {
         noSpaces: "Name must not contain spaces."
       }
+    },
+    categoryId: {
+      validators: [Validators.required],
+      messages: {
+        required: "Category is required."
+      }
     }
   };
 

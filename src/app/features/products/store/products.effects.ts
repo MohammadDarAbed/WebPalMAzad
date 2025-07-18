@@ -7,6 +7,8 @@ import * as ProductActions from './products.actions';
 import { ProductsService } from '../services/products.service';
 import * as NotificationActions from '../../../shared/notifications/store/notification.actions';
 import { NotificationModel, NotificationType } from '../../../shared/notifications/snackbar.model';
+import { Product } from '../models/product.model';
+import { ErrorsModel } from '../../../shared/models/errors.model';
 
 @Injectable()
 export class ProductsEffects {
@@ -16,8 +18,11 @@ export class ProductsEffects {
   updateProduct$;
   deleteProduct$;
   createProductSuccess$;
+  createProductFailure$;
   updateProductSuccess$;
   deleteProductSuccess$;
+  deleteProductFailure$;
+  updateProductFailure$;
 
   constructor(
     private readonly actions$: Actions,
@@ -30,7 +35,7 @@ export class ProductsEffects {
           this.productsService.getProducts().pipe(
             tap(products => console.log('[Effect] Products loaded:', products)),
             map(products => ProductActions.loadProductsSuccess({ products })),
-            catchError(error =>
+            catchError((error: ErrorsModel<Product>) =>
               of(ProductActions.loadProductsFailure({ error }))
             )
           )
@@ -60,11 +65,27 @@ export class ProductsEffects {
           this.productsService.createProduct(action.product).pipe(
             tap(product => console.log('[Effect] Product created:', product)),
             map(product => ProductActions.createProductSuccess({ product })),
-            catchError(error =>
+            catchError((error: ErrorsModel<Product>) =>
               of(ProductActions.createProductFailure({ error }))
             )
           )
         )
+      )
+    );
+
+    this.createProductFailure$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(ProductActions.createProductFailure),
+        mergeMap((action) => {
+          const notification: NotificationModel = {
+            id: Date.now(),
+            // text: action.error,
+            text: 'Error!',
+            type: NotificationType.Error,
+            autoDisappear: false,
+          };
+          return [NotificationActions.showNotification({ notification })];
+        })
       )
     );
 
@@ -90,7 +111,7 @@ export class ProductsEffects {
           this.productsService.updateProduct(action.product).pipe(
             tap(product => console.log('[Effect] Product updated:', product)),
             map(product => ProductActions.updateProductSuccess({ product })),
-            catchError(error =>
+            catchError((error: ErrorsModel<Product>) =>
               of(ProductActions.updateProductFailure({ error }))
             )
           )
@@ -107,6 +128,22 @@ export class ProductsEffects {
             text: `Product updated successfully: ${action.product.name}`,
             type: NotificationType.Information,
             autoDisappear: true,
+          };
+          return [NotificationActions.showNotification({ notification })];
+        })
+      )
+    );
+
+    this.updateProductFailure$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(ProductActions.updateProductFailure),
+        mergeMap((action) => {
+          const notification: NotificationModel = {
+            id: Date.now(),
+            // text: action.error?.error?.message,
+            text: 'Error!',
+            type: NotificationType.Error,
+            autoDisappear: false,
           };
           return [NotificationActions.showNotification({ notification })];
         })
@@ -143,5 +180,20 @@ export class ProductsEffects {
       )
     );
 
+    this.deleteProductFailure$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(ProductActions.deleteProductFailure),
+        mergeMap((action) => {
+          const notification: NotificationModel = {
+            id: Date.now(),
+            // text: action.error,
+            text: 'Error!',
+            type: NotificationType.Error,
+            autoDisappear: false,
+          };
+          return [NotificationActions.showNotification({ notification })];
+        })
+      )
+    );
   }
 }

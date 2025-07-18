@@ -15,7 +15,7 @@ export function ProductGridConfig() {
     columns: [
       { key: 'id', label: 'ID', type: EditableGridCellType.readonly, sortable: true, width: 30 },
       { key: 'name', label: 'Name', type: EditableGridCellType.text, sortable: true, filterable: true, width: 120 },
-      { key: 'price', label: 'Price', type: EditableGridCellType.text, sortable: true, filterable: true, width: 120 },
+      { key: 'price', label: 'Price', type: EditableGridCellType.number, sortable: true, filterable: true, width: 120 },
       { key: 'description', label: 'Description', type: EditableGridCellType.text, width: 240 },
       { key: 'productQR', label: 'Product QR', type: EditableGridCellType.text, width: 120 },
       {

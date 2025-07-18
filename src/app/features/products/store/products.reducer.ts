@@ -24,7 +24,6 @@ export const productsReducer = createReducer(
     ProductActions.loadProductById, (state) => ({
     ...state,
     loading: true,
-    error: null
   })),
   on(ProductActions.loadProductsSuccess, (state, { products }) => ({
     ...state,
@@ -37,16 +36,18 @@ export const productsReducer = createReducer(
     ProductActions.createProductFailure,
     ProductActions.updateProductFailure,
     ProductActions.deleteProductFailure,
-    (state, { error }) => ({
+    (state,  action ) => ({
       ...state,
       loading: false,
-      error,
+      error: action.error,
+
     })),
   on(ProductActions.loadProductByIdSuccess, (state, { product }) => ({
     ...state,
     loading: false,
     product,
-    totalResults: 1
+    totalResults: 1,
+    error: null
   })),
   on(ProductActions.createProductSuccess, (state, { product }) => ({
     ...state,
