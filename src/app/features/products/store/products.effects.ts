@@ -31,7 +31,7 @@ export class ProductsEffects {
     this.loadProducts$ = createEffect(() =>
       this.actions$.pipe(
         ofType(ProductActions.loadProducts),
-        switchMap(() =>
+        mergeMap(() =>
           this.productsService.getProducts().pipe(
             tap(products => console.log('[Effect] Products loaded:', products)),
             map(products => ProductActions.loadProductsSuccess({ products })),

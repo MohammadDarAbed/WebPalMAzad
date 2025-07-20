@@ -19,6 +19,8 @@ export interface TableColumn<T = any> {
   sortable?: boolean;               // enable sorting
   filterable?: boolean;             // enable filtering
   width?: number;                   // optional width (e.g. '150px')
+  previewKey?: string;              // optional nested property path for preview
+  valueKey?: string;                // optional nested property path for form control value
 }
 
 export interface TableColumnWithStringKey<T> extends TableColumn<T> {
@@ -35,6 +37,6 @@ export interface TableConfig<T = any> {
   dragDropRows?: boolean;           // enable row drag and drop
   dragDropColumns?: boolean;        // enable column drag and drop
   headerActionsTemplate?: TemplateRef<any>;  // custom header area
-  actionsColumnWidth?: number             // optional actions column width (e.g. '150px')
-  useDialogToDelete?: boolean             // optional actions column width (e.g. '150px')
+  actionsColumnWidth?: number;             // optional actions column width (e.g. '150px')
+  useDialogToDelete?: boolean;             // optional actions column width (e.g. '150px')
 }

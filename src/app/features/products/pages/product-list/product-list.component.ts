@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as ProductActions from '../../store/products.actions';
+import * as CategoryActions from '../../../categories/store/category.actions';
 import { Observable } from 'rxjs';
 import { Product } from '../../models/product.model';
 import { selectAllProducts, selectProductLoading, selectProductError } from '../../store/products.selectors';
@@ -10,6 +11,9 @@ import { ProductGridConfig } from '../../models/product-grid-form';
 import { EditableGridComponent } from '../../../../shared/editable-grid/editable-grid-component/editable-grid.component';
 import { ValidatorFn, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/editable-grid/Validations/validators.custom';
+import { Category } from '../../../categories/Models/category.model';
+import { selectAllCategories } from '../../../categories/store/category.selectors';
+import { CategoriesActionNames } from '../../../categories/store/category.actions';
 
 @Component({
   standalone: true,
@@ -23,8 +27,11 @@ export class ProductListComponent implements OnInit {
   products$: Observable<Product[]>;
   loading$: Observable<boolean>;
   error$: Observable<any>;
+  categories$: Observable<Category[]>;
   currency: string = "$";
   products: Product[] = [];
+  categories: Category[] = [];
+  tableConfig: TableConfig<Product> = ProductGridConfig();
 
   validators: { [key: string]: { validators: ValidatorFn[], messages?: { [key: string]: string } } } = {
     name: {
@@ -65,17 +72,31 @@ export class ProductListComponent implements OnInit {
     this.products$ = this.store.select(selectAllProducts);
     this.loading$ = this.store.select(selectProductLoading);
     this.error$ = this.store.select(selectProductError);
+    this.categories$ = this.store.select(selectAllCategories);
   }
 
   ngOnInit() {
+    this.store.dispatch(CategoryActions.loadCategories());
     this.store.dispatch(ProductActions.loadProducts());
     this.products$.subscribe(products => {
       this.products = products;
       console.log("OnInit: ", products);
     });
+
+    this.categories$.subscribe(categories => {
+      this.categories = categories;
+
+      const categoryColumn = this.tableConfig.columns.find(col => col.key === 'category');
+      if (categoryColumn) {
+        categoryColumn.options = categories.map(category => ({
+          value: category.id,
+          label: category.name
+        }));
+      }
+    });
+
   }
 
-  tableConfig: TableConfig<Product> = ProductGridConfig();
 
 
   onProductsChange(updated: any) {
@@ -88,9 +109,13 @@ export class ProductListComponent implements OnInit {
       name: newProduct.name,
       price: newProduct.price,
       description: newProduct.description,
-      categoryId: newProduct.categoryId,
+      categoryId: newProduct.category,
       isDeleted: false,
-      productQR: newProduct.productQR
+      productQR: newProduct.productQR,
+      condition: newProduct.condition,
+      isHiddenSellerInfo: newProduct.isHiddenSellerInfo ?? false,
+      sellerId: newProduct.seller,
+      isPublished: newProduct.isPublished ?? false,
     };
     this.store.dispatch(ProductActions.createProduct({ product: product }));
   }
@@ -105,10 +130,15 @@ export class ProductListComponent implements OnInit {
       name: event.row.name,
       price: event.row.price,
       description: event.row.description,
-      categoryId: event.row.categoryId,
+      categoryId: event.row.category,
       isDeleted: false,
-      productQR: event.row.productQR
+      productQR: event.row.productQR,
+      condition: event.row.condition,
+      isHiddenSellerInfo: event.row.isHiddenSellerInfo,
+      sellerId: event.row.seller,
+      isPublished: event.row.isPublished,
     };
+
     this.store.dispatch(ProductActions.updateProduct({ product: product }));
   }
 

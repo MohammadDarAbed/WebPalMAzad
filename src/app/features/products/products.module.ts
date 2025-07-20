@@ -6,6 +6,8 @@ import { productsReducer } from './store/products.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { ProductsEffects } from './store/products.effects';
 import { ProductsRoutingModule } from './product-routing.module';
+import { CategoryReducer } from '../categories/store/category.reducer';
+import { CategoryEffects } from '../categories/store/category.effects';
 
 @NgModule({
   declarations: [],
@@ -14,7 +16,9 @@ import { ProductsRoutingModule } from './product-routing.module';
     ProductsRoutingModule,
     ProductListComponent,
     EffectsModule.forFeature([ProductsEffects]),
+    EffectsModule.forFeature([CategoryEffects]),
     StoreModule.forFeature('products', productsReducer),
+    StoreModule.forFeature('categories', CategoryReducer),
 
   ],
 })

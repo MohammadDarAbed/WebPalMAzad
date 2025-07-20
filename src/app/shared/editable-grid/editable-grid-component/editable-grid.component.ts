@@ -32,13 +32,22 @@ import { MatNativeDateModule } from '@angular/material/core';
 })
 export class RowValuePipe implements PipeTransform {
   counter = 0;
+
+  private getNestedValue(obj: any, path: string): any { // TODO: Remove this method after enhance the select fields
+    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  }
+
   transform(row: any, key: string, columns: TableColumn<any>[]): any {
     const col = columns.find(c => c.key === key);
-    if (col?.type === 'select' && col.options) {
-      const option = col.options.find(opt => opt.value === row[key]);
-      return option ? option.label : row[key];
+    if (!col) return null;
+
+    const value = col.previewKey ? this.getNestedValue(row, col.previewKey) : row[key];
+
+    if (col.type === 'select' && col.options) {
+      const option = col.options.find(opt => opt.value === value);
+      return option ? option.label : value;
     }
-    return row[key];
+    return value;
   }
 }
 
@@ -320,7 +329,7 @@ export class EditableGridComponent<T> implements OnInit {
         const filterValue = this.filters[String(col.key)];
         if (!filterValue) return true; // no filter on this column
 
-        const cellValue = (row as any)[String(col.key)]; // col.key is keyof T - use directly
+        const cellValue = col.previewKey ? col.previewKey.split('.').reduce((acc: any, part: string) => acc && acc[part], row) : (row as any)[String(col.key)];
 
         return cellValue != null
           ? cellValue.toString().toLowerCase().includes(filterValue.toLowerCase())
@@ -348,9 +357,13 @@ export class EditableGridComponent<T> implements OnInit {
     const col = this.config.columns.find(c => c.key === this.sortColumn);
     if (!col) return;
 
+    const getNestedValue = (obj: any, path: string): any => {
+      return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    };
+
     this.orderedItems = [...this.orderedItems].sort((a, b) => {
-      const aValue = (a as any)[this.sortColumn!];
-      const bValue = (b as any)[this.sortColumn!];
+      const aValue = col.previewKey ? getNestedValue(a, col.previewKey) : (a as any)[this.sortColumn!];
+      const bValue = col.previewKey ? getNestedValue(b, col.previewKey) : (b as any)[this.sortColumn!];
 
       if (aValue == null) return 1; //  descending 
       if (bValue == null) return -1; // ascending
@@ -372,12 +385,17 @@ export class EditableGridComponent<T> implements OnInit {
   //   return row[key];
   // }
 
+  private getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  }
+
   private createFormGroup(row: T): FormGroup {
     const group: any = {};
     this.config.columns.forEach(col => {
       if (col.type && col.type !== 'readonly') {
         const validatorsForKey = this.validators[col.key] || [];
-        group[col.key] = new FormControl((row as any)[col.key], validatorsForKey);
+        const value = col.valueKey ? this.getNestedValue(row, col.valueKey) : (row as any)[col.key];
+        group[col.key] = new FormControl(value, validatorsForKey);
       }
     });
     return new FormGroup(group);
