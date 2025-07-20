@@ -1,14 +1,6 @@
 import { EditableGridCellType, TableConfig } from "../../../shared/editable-grid/table-column";
 import { Product } from "./product.model";
 
-export enum CategoryEnum {
-  Other = 1,
-  Vhecle = 2,
-  Food = 3,
-  Device = 4,
-  Land = 5,
-  Clothe = 6
-}
 
 export function ProductGridConfig() {
   return {
@@ -18,18 +10,37 @@ export function ProductGridConfig() {
       { key: 'price', label: 'Price', type: EditableGridCellType.number, sortable: true, filterable: true, width: 120 },
       { key: 'description', label: 'Description', type: EditableGridCellType.text, width: 240 },
       { key: 'productQR', label: 'Product QR', type: EditableGridCellType.text, width: 120 },
-      {
-        key: 'categoryId',
-        label: 'Category',
-        type: EditableGridCellType.select,
+      { key: 'seller', label: 'Seller', type: EditableGridCellType.select, width: 120, previewKey: 'seller.name', valueKey: 'seller.id',
         options: [
-          { value: CategoryEnum.Other, label: 'Other' },
-          { value: CategoryEnum.Vhecle, label: 'Vhecle' },
-          { value: CategoryEnum.Food, label: 'Food' },
-          { value: CategoryEnum.Device, label: 'Device' },
-          { value: CategoryEnum.Land, label: 'Land' },
-          { value: CategoryEnum.Clothe, label: 'Clothe' },
-        ],
+          { value: 1, label: 'System' },
+        ]
+       },
+      { key: 'condition', label: 'Condition', type: EditableGridCellType.select, width: 120, valueKey: 'value',
+          options: [ 
+          {value: 1, label: 'New'},
+          {value: 2, label: 'Used'},
+          {value: 3, label: 'Service'}
+        ]
+       },
+      { key: 'isHiddenSellerInfo', label: 'Hidden Seller', type: EditableGridCellType.select, width: 12,
+        options: [ 
+          {value: false, label: 'False'},
+          {value: true, label: 'True'}
+        ]
+       },
+      { key: 'isPublished', label: 'Published', type: EditableGridCellType.select, width: 12,
+        options: [ 
+          {value: false, label: 'False'},
+          {value: true, label: 'True'}
+        ]
+       },
+      {
+        key: 'category',
+        label: 'Category',
+        previewKey: 'category.name',
+        valueKey: 'category.id',
+        type: EditableGridCellType.select,
+        options: [],
         sortable: true,
         filterable: true,
         width: 120        
