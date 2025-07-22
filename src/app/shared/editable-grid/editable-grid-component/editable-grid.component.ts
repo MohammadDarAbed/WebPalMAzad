@@ -19,12 +19,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
-import { TableColumn, TableConfig } from '../table-column';
+import { EditableGridCellType, TableColumn, TableConfig } from '../table-column';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { CustomComboboxFieldComponent } from '../../ng-components/combobox-field.component/combobox-field/combobox-field.component';
 
 @Pipe({
   name: 'rowValue',
@@ -67,7 +68,8 @@ export class RowValuePipe implements PipeTransform {
     MatFormFieldModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    RowValuePipe
+    RowValuePipe,
+    FlareComboboxFieldComponent
   ],
   templateUrl: './editable-grid.component.html',
   styleUrls: ['./editable-grid.component.scss'],
@@ -268,10 +270,17 @@ export class EditableGridComponent<T> implements OnInit {
     if (!form || !form.valid) return false;
 
     const originalRow = this.orderedItems[index];
+    // const updatedValues = { ...form.value };  // clone form values
     const updatedValues = form.value;
     const originalRowObj = originalRow as Record<string, any>;
     const updatedValuesObj = updatedValues as Record<string, any>;
 
+
+    this.config.columns.forEach(col => {
+      if (col.type === EditableGridCellType.select && updatedValues[col.key]) {
+        updatedValues[col.key] = updatedValues[col.key].value;
+      }
+    });
     if (!this.newRowIndices.has(index)) { // call cellValueChanged just in the edit mode not in add
       const changedKeys = Object.keys(updatedValuesObj).filter(
         key => updatedValuesObj[key] !== originalRowObj[key]
@@ -391,11 +400,23 @@ export class EditableGridComponent<T> implements OnInit {
 
   private createFormGroup(row: T): FormGroup {
     const group: any = {};
-    this.config.columns.forEach(col => {
-      if (col.type && col.type !== 'readonly') {
-        const validatorsForKey = this.validators[col.key] || [];
-        const value = col.valueKey ? this.getNestedValue(row, col.valueKey) : (row as any)[col.key];
-        group[col.key] = new FormControl(value, validatorsForKey);
+    this.config.columns.forEach((col, index) => {
+      let value: any;
+
+      if (col.key === 'order' && rowIndex !== undefined) {
+        value = rowIndex + 1;
+        group[col.key] = new FormControl({ value, disabled: true });
+      } else if (col.type && col.type !== EditableGridCellType.readonly) {
+        if (col.type === EditableGridCellType.select && col.options?.length) {
+          const idValue = col.valueKey ? this.getNestedValue(row, col.valueKey) : (row as any)[col.key];
+          value = col.options.find(opt => opt.value === idValue) || null;
+        } else {
+          value = col.valueKey ? this.getNestedValue(row, col.valueKey) : (row as any)[col.key];
+        }
+        group[col.key] = new FormControl(value, this.validators[col.key]?.validators || []);
+      } else if (col.type === EditableGridCellType.readonly) {
+        value = col.valueKey ? this.getNestedValue(row, col.valueKey) : (row as any)[col.key];
+        group[col.key] = new FormControl({ value, disabled: true });
       }
     });
     return new FormGroup(group);
@@ -433,4 +454,8 @@ export class EditableGridComponent<T> implements OnInit {
   }
   //#endregion
 
+
+  getFormControl(rowIndex: number, key: string): FormControl {
+    return this.editingForms.get(rowIndex)?.get(key) as FormControl;
+  }
 }

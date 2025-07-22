@@ -20,6 +20,6 @@ const materialModules = [
   imports: [
     CommonModule
   ],
-   exports: [...materialModules]
+  exports: [...materialModules]
 })
 export class MaterialModule { }

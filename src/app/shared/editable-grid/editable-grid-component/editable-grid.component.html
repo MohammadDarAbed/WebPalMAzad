@@ -32,10 +32,20 @@
               <input [type]="col.type || 'text'" min="0" *ngSwitchCase="'number'" matInput [formControlName]="col.key"
                 [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
               <input *ngSwitchCase="'readOnly'" matInput [formControlName]="col.key" [readonly]="true" />
-              <mat-select *ngSwitchCase="'select'" [formControlName]="col.key"
-                [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)">
-                <mat-option *ngFor="let opt of col.options" [value]="opt.value">{{ opt.label }}</mat-option>
-              </mat-select>
+              <ng-container *ngSwitchCase="'select'">
+                <ng-container *ngIf="editingRowIndices.has(i); ">
+                  <app-combobox-field
+                    *ngIf="col.type === 'select'"
+                    [formControl]="getFormControl(i, col.key)"
+                    [data]="col.options || []"
+                    [textField]="'label'"
+                    [valueField]="'value'"
+                    [placeholder]="col.placeholder || ''"
+                    [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)"
+                    appearance="outline">
+                  </app-combobox-field>
+                </ng-container>
+              </ng-container>
               <input *ngSwitchCase="'date'" matInput [matDatepicker]="picker" [formControlName]="col.key" />
               <mat-datepicker-toggle *ngSwitchCase="'date'" matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>

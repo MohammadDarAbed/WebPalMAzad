@@ -60,7 +60,7 @@ export class ProductListComponent implements OnInit {
         noSpaces: "Name must not contain spaces."
       }
     },
-    categoryId: {
+    category: {
       validators: [Validators.required],
       messages: {
         required: "Category is required."
@@ -78,9 +78,12 @@ export class ProductListComponent implements OnInit {
   ngOnInit() {
     this.store.dispatch(CategoryActions.loadCategories());
     this.store.dispatch(ProductActions.loadProducts());
+
     this.products$.subscribe(products => {
       this.products = products;
-      console.log("OnInit: ", products);
+      const orderedProducts = products.map((p, i) => ({ ...p, order: i + 1 }));
+      this.products = orderedProducts;
+
     });
 
     this.categories$.subscribe(categories => {
@@ -104,7 +107,7 @@ export class ProductListComponent implements OnInit {
   }
 
   onProductAdded(newProduct: any) {
-    var product: Product = {
+    const product: Product = {
       id: 0,
       name: newProduct.name,
       price: newProduct.price,
@@ -117,7 +120,7 @@ export class ProductListComponent implements OnInit {
       sellerId: newProduct.seller,
       isPublished: newProduct.isPublished ?? false,
     };
-    this.store.dispatch(ProductActions.createProduct({ product: product }));
+    this.store.dispatch(ProductActions.createProduct({ product }));
   }
 
   onProductDeleted(deletedProduct: Product) {
@@ -125,7 +128,7 @@ export class ProductListComponent implements OnInit {
   }
 
   onProductEdited(event: { index: number; row: any }) {
-    var product: Product = {
+    const product: Product = {
       id: event.row.id,
       name: event.row.name,
       price: event.row.price,
@@ -139,7 +142,7 @@ export class ProductListComponent implements OnInit {
       isPublished: event.row.isPublished,
     };
 
-    this.store.dispatch(ProductActions.updateProduct({ product: product }));
+    this.store.dispatch(ProductActions.updateProduct({ product }));
   }
 
   onProductReordered(reordered: any) {
