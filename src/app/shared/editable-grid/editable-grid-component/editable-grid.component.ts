@@ -429,7 +429,14 @@ export class EditableGridComponent<T> implements OnInit {
 
   deleteRowProcess(index: number) {
     const rowToDelete = this.orderedItems[index];
-    this.rowDeleted.emit(rowToDelete);
+    if (this.editingRowIndices.has(index) && !(rowToDelete as any)?.id) { // To allow to delete a new row added before save it
+      const newData = this.orderedItems.filter(row => row !== rowToDelete);
+      this.refreshData();
+      this.applyFilters(); // Recompute orderedItems if needed
+      this.orderedItems = newData;
+    } else {
+      this.rowDeleted.emit(rowToDelete);
+    }
     // then deleteRowStatus subscribe will check if the row was deleted before delete the row from table
   }
 
