@@ -84,6 +84,7 @@ export class EditableGridComponent<T> implements OnInit {
   @Input() config!: TableConfig<T>;
   @Input() data: T[] = [];
   @Input() public validators: any = {};
+  @Input() lastDeletedItemId$: Observable<number | null> = of(null);
   // #endregion
 
   // #region Outputs
@@ -119,6 +120,20 @@ export class EditableGridComponent<T> implements OnInit {
     this.displayedColumns = this.config.columns.map(col => String(col.key));
     this.orderedItems = [...this.data];
     this.actionsColumnWidthl = this.config.actionsColumnWidth;
+    this.subscribes();
+  }
+
+  public subscribes() {
+    this.deleteRowStatus();
+  }
+  public deleteRowStatus() {
+    this.lastDeletedItemId$.subscribe(id => {
+      if (id !== null) {
+        this.orderedItems = this.orderedItems.filter(item => (item as any).id !== id);
+        this.refreshData();
+        this.applyFilters();
+      }
+    });
   }
   // #endregion
 
@@ -202,13 +217,11 @@ export class EditableGridComponent<T> implements OnInit {
 
   // Cancel editing single row
   cancelEdit(index: number) {
-    console.log("From cancelEdit: ", index);
     this.editingRowIndices.delete(index);
     this.editingForms.delete(index);
   }
 
   deleteRow(index: number) {
-    console.log("From deleteRow: ", index);
     if (this.config.useDialogToDelete) {
       const dialogRef = this.dialog.open(ConfirmDialogComponent, {
         disableClose: true,
@@ -250,14 +263,37 @@ export class EditableGridComponent<T> implements OnInit {
 
   // Cancel all edits
   cancelAllEdits() {
-        console.log("From cancelAllEdits");
-
     this.editingRowIndices.clear();
     this.editingForms.clear();
   }
 
   trackById(index: number, item: T): any {
     return (item as any).id ?? index;
+  }
+
+  getErrorMessage(formGroup: FormGroup, key: string): string | null {
+    const control = formGroup.get(key);
+    if (!control || !control.errors) return null;
+
+    const errors = control.errors;
+    const validatorMessages = this.validators[key]?.messages || {};
+
+    for (const errorName in errors) {
+      if (validatorMessages[errorName]) {
+        if (errorName === 'max') {
+          return validatorMessages[errorName].replace('{max}', errors[errorName].max);
+        }
+        if (errorName === 'min') {
+          return validatorMessages[errorName].replace('{min}', errors[errorName].min);
+        }
+        return validatorMessages[errorName];
+      }
+    }
+    return null;
+  }
+
+  getFormControl(rowIndex: number, key: string): FormControl {
+    return this.editingForms.get(rowIndex)?.get(key) as FormControl;
   }
   // #endregion
 
@@ -273,7 +309,7 @@ export class EditableGridComponent<T> implements OnInit {
     // const updatedValues = { ...form.value };  // clone form values
     const updatedValues = form.value;
     const originalRowObj = originalRow as Record<string, any>;
-    const updatedValuesObj = updatedValues as Record<string, any>;
+    const updatedValuesObj = updatedValues as Record<string, any>; // TODO make the updated value correct object
 
 
     this.config.columns.forEach(col => {
@@ -308,27 +344,6 @@ export class EditableGridComponent<T> implements OnInit {
     this.editingRowIndices.delete(index);
     this.editingForms.delete(index);
     return true;
-  }
-
-  getErrorMessage(formGroup: FormGroup, key: string): string | null {
-    const control = formGroup.get(key);
-    if (!control || !control.errors) return null;
-
-    const errors = control.errors;
-    const validatorMessages = this.validators[key]?.messages || {};
-
-    for (const errorName in errors) {
-      if (validatorMessages[errorName]) {
-        if (errorName === 'max') {
-          return validatorMessages[errorName].replace('{max}', errors[errorName].max);
-        }
-        if (errorName === 'min') {
-          return validatorMessages[errorName].replace('{min}', errors[errorName].min);
-        }
-        return validatorMessages[errorName];
-      }
-    }
-    return null;
   }
 
   // Filtering rows based on filters object
@@ -383,16 +398,6 @@ export class EditableGridComponent<T> implements OnInit {
     });
   }
 
-  // In your component class
-  // getRowValue(row: any, key: string): any {
-  //   const col = this.config.columns.find(c => c.key === key);
-  //   if (col && col.type === 'select' && col.options) {
-  //     const option = col.options.find((opt: any) => opt.value === row[key]);
-  //     return option ? option.label : row[key];
-  //   }
-  //   // this.dataChange.emit({value: row, key: key} as any);
-  //   return row[key];
-  // }
 
   private getNestedValue(obj: any, path: string): any {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
@@ -422,40 +427,14 @@ export class EditableGridComponent<T> implements OnInit {
     return new FormGroup(group);
   }
 
-  //   get displayedColumnKeys(): string[] {
-  //   return this.config.columns.map(c => String(c.key));
-  // }
-
   deleteRowProcess(index: number) {
     const rowToDelete = this.orderedItems[index];
-    // Directly remove the item from `data` by object reference
-    const newData = this.orderedItems.filter(row => row !== rowToDelete);
-    this.orderedItems = newData;
-
     this.rowDeleted.emit(rowToDelete);
-    this.refreshData();
-    this.applyFilters(); // Recompute orderedItems if needed
-
+    // then deleteRowStatus subscribe will check if the row was deleted before delete the row from table
   }
-
-  // Handle column drag and drop
-  // dropColumn(event: CdkDragDrop<string[]>) {
-  //   moveItemInArray(this.displayedColumns, event.previousIndex, event.currentIndex);
-  //   // Reorder columns config accordingly
-  //   const newColumnsOrder = this.displayedColumns.map(colKey =>
-  //     this.config.columns.find(c => c.key === colKey)!
-  //   );
-  //   this.config.columns = newColumnsOrder;
-  //   this.columnReordered.emit(this.config.columns);
-  // }
 
   refreshData() {
     this.data = [...this.orderedItems];
   }
   //#endregion
-
-
-  getFormControl(rowIndex: number, key: string): FormControl {
-    return this.editingForms.get(rowIndex)?.get(key) as FormControl;
-  }
 }

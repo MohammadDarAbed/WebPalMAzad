@@ -155,8 +155,8 @@ export class ProductsEffects {
         ofType(ProductActions.deleteProduct),
         mergeMap((action) =>
           this.productsService.deleteProduct(action.id).pipe(
-            tap(id => console.log('[Effect] Product deleted:', id)),
-            map(id => ProductActions.deleteProductSuccess({ id })),
+            tap(id => console.log('[Effect] Product deleted:', action.id)),
+            map(id => ProductActions.deleteProductSuccess({ id: action.id })),
             catchError(error =>
               of(ProductActions.deleteProductFailure({ error }))
             )

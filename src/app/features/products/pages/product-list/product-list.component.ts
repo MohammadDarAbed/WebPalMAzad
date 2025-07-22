@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import * as ProductActions from '../../store/products.actions';
 import * as CategoryActions from '../../../categories/store/category.actions';
 import { Observable } from 'rxjs';
 import { Product } from '../../models/product.model';
-import { selectAllProducts, selectProductLoading, selectProductError } from '../../store/products.selectors';
+import { selectAllProducts, selectProductLoading, selectProductError, selectLastDeletedProductId } from '../../store/products.selectors';
 import { CommonModule } from '@angular/common';
 import { TableColumn, TableConfig } from '../../../../shared/editable-grid/table-column';
 import { ProductGridConfig } from '../../models/product-grid-form';
@@ -13,7 +13,7 @@ import { ValidatorFn, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/editable-grid/Validations/validators.custom';
 import { Category } from '../../../categories/Models/category.model';
 import { selectAllCategories } from '../../../categories/store/category.selectors';
-import { CategoriesActionNames } from '../../../categories/store/category.actions';
+import { ProductsService } from '../../services/products.service';
 
 @Component({
   standalone: true,
@@ -22,7 +22,6 @@ import { CategoriesActionNames } from '../../../categories/store/category.action
   styleUrls: ['./product-list.component.scss'],
   imports: [CommonModule, EditableGridComponent]
 })
-
 export class ProductListComponent implements OnInit {
   products$: Observable<Product[]>;
   loading$: Observable<boolean>;
@@ -97,10 +96,11 @@ export class ProductListComponent implements OnInit {
         }));
       }
     });
-
   }
 
-
+  public get lastDeletedProductId$(): Observable<number | null> {
+    return this.store.pipe(select(selectLastDeletedProductId));
+  }
 
   onProductsChange(updated: any) {
     console.log("OnChange: ", updated);

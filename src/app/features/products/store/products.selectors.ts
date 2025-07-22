@@ -17,3 +17,8 @@ export const selectProductError = createSelector(
   selectProductFeature,
   (state) => state.error
 );
+
+export const selectLastDeletedProductId = createSelector(
+  selectProductFeature,
+  (state) => state.lastDeletedProductId
+);

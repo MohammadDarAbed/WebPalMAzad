@@ -9,7 +9,7 @@ export function ProductGridConfig() {
       { key: 'name', label: 'Name', type: EditableGridCellType.text, sortable: true, filterable: true, width: 120 },
       { key: 'price', label: 'Price', type: EditableGridCellType.number, sortable: true, filterable: true, width: 120 },
       { key: 'description', label: 'Description', type: EditableGridCellType.text, width: 240 },
-      { key: 'productQR', label: 'Product QR', type: EditableGridCellType.readonly, width: 120 },
+      { key: 'productQR', label: 'Product QR', type: EditableGridCellType.text, width: 120 },
       {
         key: 'seller', label: 'Seller', type: EditableGridCellType.select, width: 120, placeholder: "Select...",
         previewKey: 'seller.name', valueKey: 'sellerId',

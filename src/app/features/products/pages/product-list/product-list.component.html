@@ -1,7 +1,7 @@
 <app-editable-grid
   *ngIf="(products$ | async)?.length"
   [config]="tableConfig"
-  [data]="(products$ | async) ?? []"
+  [data]="products"
   [validators]="validators"
   (dataChange)="onProductsChange($event)"
   (cellValueChanged)="onProductsChange($event)"
@@ -9,5 +9,6 @@
   (rowDeleted)="onProductDeleted($event)"
   (rowEdited)="onProductEdited($event)"
   (rowReordered)="onProductReordered($event)"
-  (columnReordered)="onColumnReordered($event)">
+  (columnReordered)="onColumnReordered($event)"
+   [lastDeletedItemId$]="lastDeletedProductId$">
 </app-editable-grid>

@@ -7,24 +7,24 @@ export interface ProductState {
   loading: boolean;
   error: any;
   totalResults: number;
-
+  lastDeletedProductId: number | null;
 }
 
 export const initialState: ProductState = {
   products: [],
   loading: false,
   error: null,
-  totalResults: 0
-
+  totalResults: 0,
+  lastDeletedProductId: null
 };
 
 export const productsReducer = createReducer(
   initialState,
-  on(ProductActions.loadProducts, 
+  on(ProductActions.loadProducts,
     ProductActions.loadProductById, (state) => ({
-    ...state,
-    loading: true,
-  })),
+      ...state,
+      loading: true,
+    })),
   on(ProductActions.loadProductsSuccess, (state, { products }) => ({
     ...state,
     loading: false,
@@ -36,11 +36,11 @@ export const productsReducer = createReducer(
     ProductActions.createProductFailure,
     ProductActions.updateProductFailure,
     ProductActions.deleteProductFailure,
-    (state,  action ) => ({
+    (state, action) => ({
       ...state,
       loading: false,
       error: action.error,
-
+      lastDeletedProductId: null
     })),
   on(ProductActions.loadProductByIdSuccess, (state, { product }) => ({
     ...state,
@@ -56,17 +56,18 @@ export const productsReducer = createReducer(
     totalResults: state.totalResults + 1,
     error: null
   })),
-on(ProductActions.updateProductSuccess, (state, { product }) => ({
-  ...state,
-  loading: false,
-  products: state.products.map(p => p.id === product.id ? product : p),
-  error: null
-})),
-on(ProductActions.deleteProductSuccess, (state, { id }) => ({
-  ...state,
-  loading: false,
-  products: state.products.filter(p => p.id !== id), // remove the product
-  totalResults: state.totalResults - 1,
-  error: null
-})),
+  on(ProductActions.updateProductSuccess, (state, { product }) => ({
+    ...state,
+    loading: false,
+    products: state.products.map(p => p.id === product.id ? product : p),
+    error: null
+  })),
+  on(ProductActions.deleteProductSuccess, (state, { id }) => ({
+    ...state,
+    loading: false,
+    products: state.products.filter(p => p.id !== id), // remove the product
+    totalResults: state.totalResults - 1,
+    error: null,
+    lastDeletedProductId: id
+  })),
 );
