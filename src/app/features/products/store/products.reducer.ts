@@ -8,6 +8,7 @@ export interface ProductState {
   error: any;
   totalResults: number;
   lastDeletedProductId: number | null;
+  lastCreatedProduct: Product | null;
 }
 
 export const initialState: ProductState = {
@@ -15,7 +16,8 @@ export const initialState: ProductState = {
   loading: false,
   error: null,
   totalResults: 0,
-  lastDeletedProductId: null
+  lastDeletedProductId: null,
+  lastCreatedProduct: null
 };
 
 export const productsReducer = createReducer(
@@ -40,7 +42,8 @@ export const productsReducer = createReducer(
       ...state,
       loading: false,
       error: action.error,
-      lastDeletedProductId: null
+      lastDeletedProductId: null,
+      lastCreatedProduct: null
     })),
   on(ProductActions.loadProductByIdSuccess, (state, { product }) => ({
     ...state,
@@ -54,7 +57,8 @@ export const productsReducer = createReducer(
     loading: false,
     products: [...state.products, product],
     totalResults: state.totalResults + 1,
-    error: null
+    error: null,
+    lastCreatedProduct: product
   })),
   on(ProductActions.updateProductSuccess, (state, { product }) => ({
     ...state,

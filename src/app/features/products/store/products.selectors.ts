@@ -22,3 +22,8 @@ export const selectLastDeletedProductId = createSelector(
   selectProductFeature,
   (state) => state.lastDeletedProductId
 );
+
+export const selectLastCreatedProductId = createSelector(
+  selectProductFeature,
+  (state) => state.lastCreatedProduct
+);

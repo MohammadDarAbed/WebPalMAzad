@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import * as ProductActions from '../../store/products.actions';
 import * as CategoryActions from '../../../categories/store/category.actions';
+import * as UsersActions from '../../../users/store/Users.actions';
 import { Observable } from 'rxjs';
 import { Product } from '../../models/product.model';
-import { selectAllProducts, selectProductLoading, selectProductError, selectLastDeletedProductId } from '../../store/products.selectors';
+import { selectAllProducts, selectProductLoading, selectProductError, selectLastDeletedProductId, selectLastCreatedProductId } from '../../store/products.selectors';
 import { CommonModule } from '@angular/common';
 import { TableColumn, TableConfig } from '../../../../shared/editable-grid/table-column';
 import { ProductGridConfig } from '../../models/product-grid-form';
@@ -13,7 +14,8 @@ import { ValidatorFn, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/editable-grid/Validations/validators.custom';
 import { Category } from '../../../categories/Models/category.model';
 import { selectAllCategories } from '../../../categories/store/category.selectors';
-import { ProductsService } from '../../services/products.service';
+import { User } from '../../../users/models/user.model';
+import { selectAllUsers } from '../../../users/store/Users.selectors';
 
 @Component({
   standalone: true,
@@ -27,9 +29,11 @@ export class ProductListComponent implements OnInit {
   loading$: Observable<boolean>;
   error$: Observable<any>;
   categories$: Observable<Category[]>;
+  users$: Observable<User[]>;
   currency: string = "$";
   products: Product[] = [];
   categories: Category[] = [];
+  users: User[] = [];
   tableConfig: TableConfig<Product> = ProductGridConfig();
 
   validators: { [key: string]: { validators: ValidatorFn[], messages?: { [key: string]: string } } } = {
@@ -72,11 +76,13 @@ export class ProductListComponent implements OnInit {
     this.loading$ = this.store.select(selectProductLoading);
     this.error$ = this.store.select(selectProductError);
     this.categories$ = this.store.select(selectAllCategories);
+    this.users$ = this.store.select(selectAllUsers);
   }
 
   ngOnInit() {
     this.store.dispatch(CategoryActions.loadCategories());
     this.store.dispatch(ProductActions.loadProducts());
+    this.store.dispatch(UsersActions.loadUsers());
 
     this.products$.subscribe(products => {
       this.products = products;
@@ -96,10 +102,26 @@ export class ProductListComponent implements OnInit {
         }));
       }
     });
+
+    this.users$.subscribe(users => {
+      this.users = users;
+
+      const userColumn = this.tableConfig.columns.find(col => col.key === 'seller');
+      if (userColumn) {
+        userColumn.options = users.map(user => ({
+          value: user.id,
+          label: user.name
+        }));
+      }
+    });
   }
 
   public get lastDeletedProductId$(): Observable<number | null> {
     return this.store.pipe(select(selectLastDeletedProductId));
+  }
+
+  public get lastCreatedProductId$(): Observable<Product | null> {
+    return this.store.pipe(select(selectLastCreatedProductId));
   }
 
   onProductsChange(updated: any) {
@@ -112,7 +134,7 @@ export class ProductListComponent implements OnInit {
       name: newProduct.name,
       price: newProduct.price,
       description: newProduct.description,
-      categoryId: newProduct.category,
+      categoryId: 4,
       isDeleted: false,
       productQR: newProduct.productQR,
       condition: newProduct.condition,
