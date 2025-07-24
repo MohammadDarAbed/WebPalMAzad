@@ -190,14 +190,12 @@ export class EditableGridComponent<T> implements OnInit {
 
   // When filter changes for a column
   onFilterChange(columnKey: string, value: string) {
-    console.log("From onFilterChange: ", columnKey, value);
     this.filters[columnKey] = value;
     this.applyFilters();
   }
 
   // Start editing a single row
   startEdit(index: number) {
-    console.log("From startEdit: ", index);
     this.editingRowIndices.add(index);
     const row = this.orderedItems[index];
     this.editingForms.set(index, this.createFormGroup(row));
@@ -205,7 +203,6 @@ export class EditableGridComponent<T> implements OnInit {
 
   // Start editing all rows
   startEditAll() {
-    console.log("From startEditAll");
 
     this.editingRowIndices.clear();
     this.editingForms.clear();
@@ -217,7 +214,6 @@ export class EditableGridComponent<T> implements OnInit {
 
   // Save edited single row
   saveEdit(index: number) {
-    console.log("From saveEdit: ", index);
     const success = this.saveRowEdits(index);
     if (success) {
       this.refreshData();
@@ -227,7 +223,6 @@ export class EditableGridComponent<T> implements OnInit {
 
   // Save all rows
   saveAllEdits() {
-    console.log("From saveAllEdits");
     let hasChanges = false;
 
     this.editingRowIndices.forEach(index => {
@@ -270,7 +265,6 @@ export class EditableGridComponent<T> implements OnInit {
   }
   // Handle row drag and drop
   dropRow(event: CdkDragDrop<T[]>) {
-    console.log("From dropRow: ", event);
     if (this.orderedItems.length === 0) return;
 
     // Map orderedItems indexes to data indexes

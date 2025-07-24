@@ -33,7 +33,6 @@ export class CategoryEffects {
         ofType(CategoryActions.loadCategories),
         mergeMap(() =>
           this.categoryService.getCategories().pipe(
-            tap(categories => console.log('[Effect] Categories loaded:', categories)),
             map(categories => CategoryActions.loadCategoriesSuccess({ categories })),
             catchError((error: ErrorsModel<Category>) =>
               of(CategoryActions.loadCategoriesFailure({ error }))
@@ -48,7 +47,6 @@ export class CategoryEffects {
         ofType(CategoryActions.loadCategoryById),
         mergeMap(({ id }) =>
           this.categoryService.getCategoryById(id).pipe(
-            tap(category => console.log('[Effect] Category loaded:', category)),
             map(category => CategoryActions.loadCategoryByIdSuccess({ category })),
             catchError(error =>
               of(CategoryActions.loadCategoriesFailure({ error }))
@@ -63,7 +61,6 @@ export class CategoryEffects {
         ofType(CategoryActions.createCategory),
         mergeMap((action) =>
           this.categoryService.createCategory(action.category).pipe(
-            tap(category => console.log('[Effect] Category created:', category)),
             map(category => CategoryActions.createCategorySuccess({ category })),
             catchError((error: ErrorsModel<Category>) =>
               of(CategoryActions.createCategoryFailure({ error }))
@@ -109,7 +106,6 @@ export class CategoryEffects {
         ofType(CategoryActions.updateCategory),
         mergeMap((action) =>
           this.categoryService.updateCategory(action.category).pipe(
-            tap(category => console.log('[Effect] Category updated:', category)),
             map(category => CategoryActions.updateCategorySuccess({ category })),
             catchError((error: ErrorsModel<Category>) =>
               of(CategoryActions.updateCategoryFailure({ error }))
@@ -155,7 +151,6 @@ export class CategoryEffects {
         ofType(CategoryActions.deleteCategory),
         mergeMap((action) =>
           this.categoryService.deleteCategory(action.id).pipe(
-            tap(id => console.log('[Effect] Category deleted:', id)),
             map(id => CategoryActions.deleteCategorySuccess({ id })),
             catchError(error =>
               of(CategoryActions.deleteCategoryFailure({ error }))

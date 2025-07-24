@@ -33,7 +33,6 @@ export class ProductsEffects {
         ofType(ProductActions.loadProducts),
         mergeMap(() =>
           this.productsService.getProducts().pipe(
-            tap(products => console.log('[Effect] Products loaded:', products)),
             map(products => ProductActions.loadProductsSuccess({ products })),
             catchError((error: ErrorsModel<Product>) =>
               of(ProductActions.loadProductsFailure({ error }))
@@ -48,7 +47,6 @@ export class ProductsEffects {
         ofType(ProductActions.loadProductById),
         mergeMap(({ id }) =>
           this.productsService.getProductById(id).pipe(
-            tap(product => console.log('[Effect] Product loaded:', product)),
             map(product => ProductActions.loadProductByIdSuccess({ product })),
             catchError(error =>
               of(ProductActions.loadProductByIdFailure({ error }))
@@ -63,7 +61,6 @@ export class ProductsEffects {
         ofType(ProductActions.createProduct),
         mergeMap((action) =>
           this.productsService.createProduct(action.product).pipe(
-            tap(product => console.log('[Effect] Product created:', product)),
             map(product => ProductActions.createProductSuccess({ product })),
             catchError((error: ErrorsModel<Product>) =>
               of(ProductActions.createProductFailure({ error }))
@@ -109,7 +106,6 @@ export class ProductsEffects {
         ofType(ProductActions.updateProduct),
         mergeMap((action) =>
           this.productsService.updateProduct(action.product).pipe(
-            tap(product => console.log('[Effect] Product updated:', product)),
             map(product => ProductActions.updateProductSuccess({ product })),
             catchError((error: ErrorsModel<Product>) =>
               of(ProductActions.updateProductFailure({ error }))
@@ -155,7 +151,6 @@ export class ProductsEffects {
         ofType(ProductActions.deleteProduct),
         mergeMap((action) =>
           this.productsService.deleteProduct(action.id).pipe(
-            tap(id => console.log('[Effect] Product deleted:', action.id)),
             map(id => ProductActions.deleteProductSuccess({ id: action.id })),
             catchError(error =>
               of(ProductActions.deleteProductFailure({ error }))

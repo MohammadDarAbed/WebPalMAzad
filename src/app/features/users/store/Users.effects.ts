@@ -33,7 +33,6 @@ export class UsersEffects {
         ofType(UserActions.loadUsers),
         mergeMap(() =>
           this.userService.getUsers().pipe(
-            tap(users => console.log('[Effect] Users loaded:', users)),
             map(users => UserActions.loadUsersSuccess({ users })),
             catchError((error: ErrorsModel<User>) =>
               of(UserActions.loadUsersFailure({ error }))
@@ -48,7 +47,6 @@ export class UsersEffects {
         ofType(UserActions.loadUserById),
         mergeMap((action) =>
           this.userService.getUserById(action.id).pipe(
-            tap(user => console.log('[Effect] User loaded:', user)),
             map(user => UserActions.loadUserByIdSuccess({ user })),
             catchError(error =>
               of(UserActions.loadUsersFailure({ error }))
@@ -63,7 +61,6 @@ export class UsersEffects {
         ofType(UserActions.createUser),
         mergeMap((action) =>
           this.userService.createUser(action.user).pipe(
-            tap(user => console.log('[Effect] User created:', user)),
             map(user => UserActions.createUserSuccess({ user })),
             catchError((error: ErrorsModel<User>) =>
               of(UserActions.createUserFailure({ error }))
@@ -109,7 +106,6 @@ export class UsersEffects {
         ofType(UserActions.updateUser),
         mergeMap((action) =>
           this.userService.updateUser(action.user).pipe(
-            tap(user => console.log('[Effect] User updated:', user)),
             map(user => UserActions.updateUserSuccess({ user })),
             catchError((error: ErrorsModel<User>) =>
               of(UserActions.updateUserFailure({ error }))
@@ -155,7 +151,6 @@ export class UsersEffects {
         ofType(UserActions.deleteUser),
         mergeMap((action) =>
           this.userService.deleteUser(action.id).pipe(
-            tap(id => console.log('[Effect] User deleted:', id)),
             map(id => UserActions.deleteUserSuccess({ id })),
             catchError(error =>
               of(UserActions.deleteUserFailure({ error }))

@@ -13,7 +13,6 @@ export class NotificationEffects {
         ofType(NotificationActions.showNotification),
         tap(action => {
           // Here you can add side effects like logging or triggering UI notifications
-          console.log('Notification:', action.notification);
         })
       ),
       { dispatch: false }
