@@ -87,8 +87,7 @@
     </tr>
 
     <tr mat-row
-      *matRowDef="let row; let i = index; columns: config.readOnly ? displayedColumns : displayedColumns.concat(['actions']); trackBy: trackById"
-      cdkDrag cdkDragLockAxis="y" cdkDragBoundary=".mat-table" [cdkDragData]="row">
+        *matRowDef="let row; columns: config.readOnly ? displayedColumns : displayedColumns.concat(['actions']);">
     </tr>
 
 

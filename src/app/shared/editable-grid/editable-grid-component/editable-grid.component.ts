@@ -287,10 +287,6 @@ export class EditableGridComponent<T> implements OnInit {
     this.editingForms.clear();
   }
 
-  trackById(index: number, item: T): any {
-    return (item as any).id ?? index;
-  }
-
   getErrorMessage(formGroup: FormGroup, key: string): string | null {
     const control = formGroup.get(key);
     if (!control || !control.errors) return null;
