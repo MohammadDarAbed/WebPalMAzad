@@ -93,25 +93,17 @@ export class ProductListComponent implements OnInit {
 
     this.categories$.subscribe(categories => {
       this.categories = categories;
-
       const categoryColumn = this.tableConfig.columns.find(col => col.key === 'category');
       if (categoryColumn) {
-        categoryColumn.options = categories.map(category => ({
-          value: category.id,
-          label: category.name
-        }));
+        categoryColumn.options = categories;
       }
     });
 
     this.users$.subscribe(users => {
       this.users = users;
-
-      const userColumn = this.tableConfig.columns.find(col => col.key === 'seller');
-      if (userColumn) {
-        userColumn.options = users.map(user => ({
-          value: user.id,
-          label: user.name
-        }));
+      const sellerColumn = this.tableConfig.columns.find(col => col.key === 'seller');
+      if (sellerColumn) {
+        sellerColumn.options = users;
       }
     });
   }
@@ -134,13 +126,13 @@ export class ProductListComponent implements OnInit {
       name: newProduct.name,
       price: newProduct.price,
       description: newProduct.description,
-      categoryId: 4,
+      categoryId: newProduct.category?.id,
       isDeleted: false,
       productQR: newProduct.productQR,
-      condition: newProduct.condition,
-      isHiddenSellerInfo: newProduct.isHiddenSellerInfo ?? false,
-      sellerId: newProduct.seller,
-      isPublished: newProduct.isPublished ?? false,
+      condition: newProduct.condition?.id,
+      isHiddenSellerInfo: newProduct.isHiddenSellerInfo.value ?? false,
+      sellerId: newProduct.seller?.id,
+      isPublished: newProduct.isPublished.value ?? false,
     };
     this.store.dispatch(ProductActions.createProduct({ product }));
   }
@@ -155,13 +147,13 @@ export class ProductListComponent implements OnInit {
       name: event.row.name,
       price: event.row.price,
       description: event.row.description,
-      categoryId: event.row.category,
+      categoryId: event.row.category.id,
       isDeleted: false,
       productQR: event.row.productQR,
-      condition: event.row.condition,
-      isHiddenSellerInfo: event.row.isHiddenSellerInfo,
-      sellerId: event.row.seller,
-      isPublished: event.row.isPublished,
+      condition: event.row.condition?.id,
+      isHiddenSellerInfo: event.row.isHiddenSellerInfo.value ?? false,
+      sellerId: event.row.seller.id,
+      isPublished: event.row.isPublished.value ?? false,
     };
 
     this.store.dispatch(ProductActions.updateProduct({ product }));

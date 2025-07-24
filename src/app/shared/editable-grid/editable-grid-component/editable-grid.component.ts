@@ -26,6 +26,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CustomComboboxFieldComponent } from '../../ng-components/combobox-field.component/combobox-field/combobox-field.component';
+import { Observable, of } from 'rxjs';
 
 @Pipe({
   name: 'rowValue',
@@ -42,11 +43,15 @@ export class RowValuePipe implements PipeTransform {
     const col = columns.find(c => c.key === key);
     if (!col) return null;
 
-    const value = col.previewKey ? this.getNestedValue(row, col.previewKey) : row[key];
-
     if (col.type === 'select' && col.options) {
-      const option = col.options.find(opt => opt.value === value);
-      return option ? option.label : value;
+      if (row[key] !== null && typeof row[key] == 'object') {
+        value = this.getNestedValue(row, col.previewKey);
+      } else {
+        value = row[key];
+      }
+    }
+    else {
+      var value = col.previewKey ? this.getNestedValue(row, col.previewKey) : row[key];
     }
     return value;
   }
@@ -69,7 +74,7 @@ export class RowValuePipe implements PipeTransform {
     MatDatepickerModule,
     MatNativeDateModule,
     RowValuePipe,
-    FlareComboboxFieldComponent
+    CustomComboboxFieldComponent
   ],
   templateUrl: './editable-grid.component.html',
   styleUrls: ['./editable-grid.component.scss'],
@@ -85,6 +90,7 @@ export class EditableGridComponent<T> implements OnInit {
   @Input() data: T[] = [];
   @Input() public validators: any = {};
   @Input() lastDeletedItemId$: Observable<number | null> = of(null);
+  @Input() lastCreatedItem$: Observable<T | null> = of(null);
   // #endregion
 
   // #region Outputs
@@ -112,7 +118,8 @@ export class EditableGridComponent<T> implements OnInit {
   sortColumn: string | null = null;// Sorting state
   sortDirection: 'asc' | 'desc' | null = null;
   actionsColumnWidthl?: number = 120;
-
+  public newRowAddedIndex = 0;
+  public rowEditedIndex = 0;
   // #endregion
 
   // #region Lifecycle Hooks
@@ -125,6 +132,7 @@ export class EditableGridComponent<T> implements OnInit {
 
   public subscribes() {
     this.deleteRowStatus();
+    this.createRowStatus();
   }
   public deleteRowStatus() {
     this.lastDeletedItemId$.subscribe(id => {
@@ -135,6 +143,22 @@ export class EditableGridComponent<T> implements OnInit {
       }
     });
   }
+
+  public createRowStatus() {
+    this.lastCreatedItem$.subscribe(item => {
+      if (item !== null) {
+        // check if it is already exist
+        const exists = this.orderedItems.some(i => (i as any).id === (item as any).id);
+        if (!exists) {
+          this.newRowIndices.delete(this.newRowAddedIndex);
+          this.editingRowIndices.delete(this.newRowAddedIndex);
+          this.editingForms.delete(this.newRowAddedIndex);
+          this.refreshData();
+          this.applyFilters();
+        }
+      }
+    });
+  }
   // #endregion
 
   // #region Template methods:
@@ -142,14 +166,16 @@ export class EditableGridComponent<T> implements OnInit {
     const newRow = {} as T;
 
     this.config.columns.forEach(col => {
-      (newRow as any)[col.key] = '';
+      if (col.key == 'order') {
+        (newRow as any)[col.key] = this.orderedItems.length + 1;
+      } else
+        (newRow as any)[col.key] = '';
     });
 
-    this.orderedItems = [...this.orderedItems, newRow];
+    this.orderedItems = [...this.orderedItems, newRow]; // Add empty row to the end of the array
     this.newRowIndices.add(this.orderedItems.length - 1);
     // this.dataChange.emit(this.orderedItems);
     this.refreshData();
-
     this.applyFilters();
 
     // Automatically start editing the new row at the last index
@@ -311,12 +337,6 @@ export class EditableGridComponent<T> implements OnInit {
     const originalRowObj = originalRow as Record<string, any>;
     const updatedValuesObj = updatedValues as Record<string, any>; // TODO make the updated value correct object
 
-
-    this.config.columns.forEach(col => {
-      if (col.type === EditableGridCellType.select && updatedValues[col.key]) {
-        updatedValues[col.key] = updatedValues[col.key].value;
-      }
-    });
     if (!this.newRowIndices.has(index)) { // call cellValueChanged just in the edit mode not in add
       const changedKeys = Object.keys(updatedValuesObj).filter(
         key => updatedValuesObj[key] !== originalRowObj[key]
@@ -332,17 +352,15 @@ export class EditableGridComponent<T> implements OnInit {
 
     const editedRow = { ...originalRow, ...updatedValues };
     this.orderedItems[index] = editedRow;
-
     if (this.newRowIndices.has(index)) { // Added new row
+      this.newRowAddedIndex = index;
       this.rowAdded.emit(editedRow);
-      this.newRowIndices.delete(index);
     } else {                              // Edited existing row
-      const originalIndex = this.orderedItems.indexOf(originalRow);
-      this.rowEdited.emit({ index: originalIndex, row: editedRow });
+      this.rowEditedIndex = index;
+      this.rowEdited.emit({ index: index, row: editedRow });
+      this.editingRowIndices.delete(index);
+      this.editingForms.delete(index);
     }
-
-    this.editingRowIndices.delete(index);
-    this.editingForms.delete(index);
     return true;
   }
 
@@ -403,25 +421,23 @@ export class EditableGridComponent<T> implements OnInit {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
   }
 
-  private createFormGroup(row: T): FormGroup {
+  private createFormGroup(row: any, rowIndex?: number): FormGroup {
     const group: any = {};
     this.config.columns.forEach((col, index) => {
-      let value: any;
 
       if (col.key === 'order' && rowIndex !== undefined) {
         value = rowIndex + 1;
-        group[col.key] = new FormControl({ value, disabled: true });
+        group[col.key] = new FormControl(value);
       } else if (col.type && col.type !== EditableGridCellType.readonly) {
         if (col.type === EditableGridCellType.select && col.options?.length) {
-          const idValue = col.valueKey ? this.getNestedValue(row, col.valueKey) : (row as any)[col.key];
-          value = col.options.find(opt => opt.value === idValue) || null;
+          var value = col.key ? row[col.key] : this.getNestedValue(row[col.key], col.valueKey); // give the selected value as an object
         } else {
           value = col.valueKey ? this.getNestedValue(row, col.valueKey) : (row as any)[col.key];
         }
         group[col.key] = new FormControl(value, this.validators[col.key]?.validators || []);
       } else if (col.type === EditableGridCellType.readonly) {
         value = col.valueKey ? this.getNestedValue(row, col.valueKey) : (row as any)[col.key];
-        group[col.key] = new FormControl({ value, disabled: true });
+        group[col.key] = new FormControl(value);
       }
     });
     return new FormGroup(group);

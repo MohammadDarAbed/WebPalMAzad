@@ -9,7 +9,7 @@
     <!-- Dynamic columns -->
     <ng-container *ngFor="let col of config.columns" [matColumnDef]="col.key">
       <th mat-header-cell *matHeaderCellDef cdkDrag (click)="col.sortable ? onSort(col.key) : null"
-        [style.width]=`${col.width}px`>
+        [ngStyle]="{ 'text-align': col.textPosition, 'font-size': `${col.textSize}px`, 'width': col.width}">
         <div class="header-cell-content">
           <span>{{ col.label }}</span>
           <span *ngIf="col.sortable">
@@ -23,7 +23,7 @@
           (ngModelChange)="onFilterChange(col.key, $event)" />
       </th>
       <td mat-cell *matCellDef="let row; let i = index" [ngSwitch]="editingRowIndices.has(i) && config.editable"
-        [style.width]=`${col.width}px`>
+        [ngStyle]="{ 'text-align': col.textPosition, 'font-size': `${col.textSize}px`, 'width': col.width}">
         <ng-container *ngSwitchCase="true">
           <ng-container *ngIf="editingForms.get(i) as formGroup">
             <ng-container [formGroup]="formGroup" [ngSwitch]="col.type">
@@ -38,10 +38,10 @@
                     *ngIf="col.type === 'select'"
                     [formControl]="getFormControl(i, col.key)"
                     [data]="col.options || []"
-                    [textField]="'label'"
-                    [valueField]="'value'"
+                    [textField]="col.labelKey"
+                    [validators]="validators[col.key]?.validators || []"
+                    [valueField]="col.valueKey"
                     [placeholder]="col.placeholder || ''"
-                    [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)"
                     appearance="outline">
                   </app-combobox-field>
                 </ng-container>
