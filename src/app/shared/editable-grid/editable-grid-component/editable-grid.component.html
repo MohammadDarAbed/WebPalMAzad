@@ -27,24 +27,21 @@
         <ng-container *ngSwitchCase="true">
           <ng-container *ngIf="editingForms.get(i) as formGroup">
             <ng-container [formGroup]="formGroup" [ngSwitch]="col.type">
-              <input *ngSwitchCase="'text'" matInput [formControlName]="col.key" #firstEditableInput 
+              <input *ngSwitchCase="'text'" matInput [formControlName]="col.key" #firstEditableInput
                 [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
-              <input [type]="col.type || 'text'" min="0" *ngSwitchCase="'number'" matInput [formControlName]="col.key"
+              <input *ngSwitchCase="'number'" type="number" matInput [formControlName]="col.key"
                 [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
               <input *ngSwitchCase="'readOnly'" matInput [formControlName]="col.key" [readonly]="true" />
               <ng-container *ngSwitchCase="'select'">
-                <ng-container *ngIf="editingRowIndices.has(i); ">
-                  <app-combobox-field
-                    *ngIf="col.type === 'select'"
-                    [formControl]="getFormControl(i, col.key)"
-                    [data]="col.options || []"
-                    [textField]="col.labelKey"
-                    [validators]="validators[col.key]?.validators || []"
-                    [valueField]="col.valueKey"
-                    [placeholder]="col.placeholder || ''"
-                    appearance="outline">
-                  </app-combobox-field>
-                </ng-container>
+                <app-combobox-field
+                  [formControl]="getFormControl(i, col.key)"
+                  [data]="col.options || []"
+                  [textField]="col.labelKey"
+                  [validators]="validators[col.key]?.validators || []"
+                  [valueField]="col.valueKey"
+                  [placeholder]="col.placeholder || ''"
+                  appearance="outline">
+                </app-combobox-field>
               </ng-container>
               <input *ngSwitchCase="'date'" matInput [matDatepicker]="picker" [formControlName]="col.key" />
               <mat-datepicker-toggle *ngSwitchCase="'date'" matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -65,7 +62,7 @@
 
     <!-- Actions column -->
     <ng-container *ngIf="!config.readOnly" matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef cdkDrag [style.width]=`${config.actionsColumnWidth}px`> Actions </th>
+      <th mat-header-cell *matHeaderCellDef cdkDrag [style.width.px]="config.actionsColumnWidth"> Actions </th>
       <td mat-cell *matCellDef="let row; let i = index">
         <button mat-icon-button *ngIf="!editingRowIndices.has(i) && config.editable" (click)="startEdit(i)">
           <mat-icon>edit</mat-icon>
@@ -83,13 +80,12 @@
     </ng-container>
 
     <!-- Header row -->
-    <tr mat-header-row *matHeaderRowDef="config.readOnly ? displayedColumns : displayedColumns.concat(['actions'])">
-    </tr>
+    <tr mat-header-row *matHeaderRowDef="config.readOnly ? displayedColumns : displayedColumns.concat(['actions'])"></tr>
 
+    <!-- Data rows -->
     <tr mat-row
         *matRowDef="let row; columns: config.readOnly ? displayedColumns : displayedColumns.concat(['actions']);">
     </tr>
-
 
     <!-- Footer row for totals -->
     <tr class="footer-row">

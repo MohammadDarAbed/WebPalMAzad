@@ -10,12 +10,14 @@ import { CommonModule } from '@angular/common';
 import { TableColumn, TableConfig } from '../../../../shared/editable-grid/table-column';
 import { ProductGridConfig } from '../../models/product-grid-form';
 import { EditableGridComponent } from '../../../../shared/editable-grid/editable-grid-component/editable-grid.component';
-import { ValidatorFn, Validators } from '@angular/forms';
+import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/editable-grid/Validations/validators.custom';
 import { Category } from '../../../categories/Models/category.model';
 import { selectAllCategories } from '../../../categories/store/category.selectors';
 import { User } from '../../../users/models/user.model';
 import { selectAllUsers } from '../../../users/store/Users.selectors';
+import { EditableGridModel } from '../../../../shared/models/editable-grid.model';
+import { ProductState } from '../../store/products.reducer';
 
 @Component({
   standalone: true,
@@ -70,8 +72,14 @@ export class ProductListComponent implements OnInit {
       }
     }
   };
+  gridModel: EditableGridModel<Product> = {
+    data: [],
+    columns: this.tableConfig.columns,
+    validators: this.validators,
+    config: this.tableConfig
+  };
 
-  constructor(private store: Store) {
+  constructor(private store: Store<ProductState>) {
     this.products$ = this.store.select(selectAllProducts);
     this.loading$ = this.store.select(selectProductLoading);
     this.error$ = this.store.select(selectProductError);
@@ -85,40 +93,67 @@ export class ProductListComponent implements OnInit {
     this.store.dispatch(UsersActions.loadUsers());
 
     this.products$.subscribe(products => {
-      this.products = products;
-      const orderedProducts = products.map((p, i) => ({ ...p, order: i + 1 }));
-      this.products = orderedProducts;
-
+      this.gridModel.data = products.map((p, i) => ({ ...p, order: i + 1 }));
     });
 
-    this.categories$.subscribe(categories => {
-      this.categories = categories;
-      const categoryColumn = this.tableConfig.columns.find(col => col.key === 'category');
-      if (categoryColumn) {
-        categoryColumn.options = categories;
-      }
+    // Categories & users feed into the column options
+    this.categories$.subscribe(cats => {
+      this.gridModel.columns
+        .find(c => c.key === 'category')!
+        .options = cats;
     });
-
     this.users$.subscribe(users => {
-      this.users = users;
-      const sellerColumn = this.tableConfig.columns.find(col => col.key === 'seller');
-      if (sellerColumn) {
-        sellerColumn.options = users;
-      }
+      this.gridModel.columns
+        .find(c => c.key === 'seller')!
+        .options = users;
     });
+    this.gridModel.lastDeletedItemId$ = this.store.pipe(
+      select(selectLastDeletedProductId)
+    );
+    this.gridModel.lastCreatedItem$ = this.store.pipe(
+      select(selectLastCreatedProductId)
+    );
   }
 
-  public get lastDeletedProductId$(): Observable<number | null> {
-    return this.store.pipe(select(selectLastDeletedProductId));
+  /** 
+  Called when change row and click on save.
+    - row: the old row data
+    - key: the key of the column that was changed
+    - value: the new value of the column
+  */
+  onCellValueChanged(event: { row: any; key: string; value: any }) {
+    console.log("From onCellValueChanged");
   }
 
-  public get lastCreatedProductId$(): Observable<Product | null> {
-    return this.store.pipe(select(selectLastCreatedProductId));
+  /**
+ * Called when a new edit FormGroup is created for a row in the editable grid.
+ * This is a hook to apply custom dynamic logic to form controls, such as:
+ * - Subscribing to value changes of fields
+ * - Automatically updating related fields based on selection
+ * - Adding validators or modifying field states dynamically
+ *
+ * This function is useful when you need to implement behavior that depends
+ * on user input during editing.
+ */
+
+  onEditFormCreated(event: { index: number; form: FormGroup }) {
+    console.log("From onEditFormCreated");
+    const { index, form } = event;
+
+    const categoryControl = form.get('category');
+    if (categoryControl) {
+      categoryControl.valueChanges.subscribe(value => {
+        // assuming value is an object with name property
+        if (value?.name === 'Food') {
+          const descriptionControl = form.get('description');
+          if (descriptionControl) {
+            descriptionControl.setValue('Food', { emitEvent: false });
+          }
+        }
+      });
+    }
   }
 
-  onProductsChange(updated: any) {
-    console.log("OnChange: ", updated);
-  }
 
   onProductAdded(newProduct: any) {
     const product: Product = {
