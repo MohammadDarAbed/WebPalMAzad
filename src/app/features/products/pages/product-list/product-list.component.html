@@ -1,13 +1,14 @@
 <app-editable-grid
-  *ngIf="(products$ | async)?.length"
+  *ngIf="gridModel.data.length"
   [config]="tableConfig"
-  [data]="(products$ | async) ?? []"
+  [model]="gridModel"
   [validators]="validators"
-  (dataChange)="onProductsChange($event)"
-  (cellValueChanged)="onProductsChange($event)"
+  (cellValueChanged)="onCellValueChanged($event)"
   (rowAdded)="onProductAdded($event)"
   (rowDeleted)="onProductDeleted($event)"
   (rowEdited)="onProductEdited($event)"
   (rowReordered)="onProductReordered($event)"
-  (columnReordered)="onColumnReordered($event)">
+  (columnReordered)="onColumnReordered($event)"
+  (editFormCreated)="onEditFormCreated($event)"
+  >
 </app-editable-grid>

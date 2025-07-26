@@ -1,19 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import * as ProductActions from '../../store/products.actions';
 import * as CategoryActions from '../../../categories/store/category.actions';
+import * as UsersActions from '../../../users/store/Users.actions';
 import { Observable } from 'rxjs';
 import { Product } from '../../models/product.model';
-import { selectAllProducts, selectProductLoading, selectProductError } from '../../store/products.selectors';
+import { selectAllProducts, selectProductLoading, selectProductError, selectLastDeletedProductId, selectLastCreatedProductId } from '../../store/products.selectors';
 import { CommonModule } from '@angular/common';
 import { TableColumn, TableConfig } from '../../../../shared/editable-grid/table-column';
 import { ProductGridConfig } from '../../models/product-grid-form';
 import { EditableGridComponent } from '../../../../shared/editable-grid/editable-grid-component/editable-grid.component';
-import { ValidatorFn, Validators } from '@angular/forms';
+import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/editable-grid/Validations/validators.custom';
 import { Category } from '../../../categories/Models/category.model';
 import { selectAllCategories } from '../../../categories/store/category.selectors';
-import { CategoriesActionNames } from '../../../categories/store/category.actions';
+import { User } from '../../../users/models/user.model';
+import { selectAllUsers } from '../../../users/store/Users.selectors';
+import { EditableGridModel } from '../../../../shared/models/editable-grid.model';
+import { ProductState } from '../../store/products.reducer';
 
 @Component({
   standalone: true,
@@ -22,15 +26,16 @@ import { CategoriesActionNames } from '../../../categories/store/category.action
   styleUrls: ['./product-list.component.scss'],
   imports: [CommonModule, EditableGridComponent]
 })
-
 export class ProductListComponent implements OnInit {
   products$: Observable<Product[]>;
   loading$: Observable<boolean>;
   error$: Observable<any>;
   categories$: Observable<Category[]>;
+  users$: Observable<User[]>;
   currency: string = "$";
   products: Product[] = [];
   categories: Category[] = [];
+  users: User[] = [];
   tableConfig: TableConfig<Product> = ProductGridConfig();
 
   validators: { [key: string]: { validators: ValidatorFn[], messages?: { [key: string]: string } } } = {
@@ -60,64 +65,111 @@ export class ProductListComponent implements OnInit {
         noSpaces: "Name must not contain spaces."
       }
     },
-    categoryId: {
+    category: {
       validators: [Validators.required],
       messages: {
         required: "Category is required."
       }
     }
   };
+  gridModel: EditableGridModel<Product> = {
+    data: [],
+    columns: this.tableConfig.columns,
+    validators: this.validators,
+    config: this.tableConfig
+  };
 
-  constructor(private store: Store) {
+  constructor(private store: Store<ProductState>) {
     this.products$ = this.store.select(selectAllProducts);
     this.loading$ = this.store.select(selectProductLoading);
     this.error$ = this.store.select(selectProductError);
     this.categories$ = this.store.select(selectAllCategories);
+    this.users$ = this.store.select(selectAllUsers);
   }
 
   ngOnInit() {
     this.store.dispatch(CategoryActions.loadCategories());
     this.store.dispatch(ProductActions.loadProducts());
+    this.store.dispatch(UsersActions.loadUsers());
+
     this.products$.subscribe(products => {
-      this.products = products;
-      console.log("OnInit: ", products);
+      this.gridModel.data = products.map((p, i) => ({ ...p, order: i + 1 }));
     });
 
-    this.categories$.subscribe(categories => {
-      this.categories = categories;
-
-      const categoryColumn = this.tableConfig.columns.find(col => col.key === 'category');
-      if (categoryColumn) {
-        categoryColumn.options = categories.map(category => ({
-          value: category.id,
-          label: category.name
-        }));
-      }
+    // Categories & users feed into the column options
+    this.categories$.subscribe(cats => {
+      this.gridModel.columns
+        .find(c => c.key === 'category')!
+        .options = cats;
     });
-
+    this.users$.subscribe(users => {
+      this.gridModel.columns
+        .find(c => c.key === 'seller')!
+        .options = users;
+    });
+    this.gridModel.lastDeletedItemId$ = this.store.pipe(
+      select(selectLastDeletedProductId)
+    );
+    this.gridModel.lastCreatedItem$ = this.store.pipe(
+      select(selectLastCreatedProductId)
+    );
   }
 
-
-
-  onProductsChange(updated: any) {
-    console.log("OnChange: ", updated);
+  /** 
+  Called when change row and click on save.
+    - row: the old row data
+    - key: the key of the column that was changed
+    - value: the new value of the column
+  */
+  onCellValueChanged(event: { row: any; key: string; value: any }) {
+    console.log("From onCellValueChanged");
   }
+
+  /**
+ * Called when a new edit FormGroup is created for a row in the editable grid.
+ * This is a hook to apply custom dynamic logic to form controls, such as:
+ * - Subscribing to value changes of fields
+ * - Automatically updating related fields based on selection
+ * - Adding validators or modifying field states dynamically
+ *
+ * This function is useful when you need to implement behavior that depends
+ * on user input during editing.
+ */
+
+  onEditFormCreated(event: { index: number; form: FormGroup }) {
+    console.log("From onEditFormCreated");
+    const { index, form } = event;
+
+    const categoryControl = form.get('category');
+    if (categoryControl) {
+      categoryControl.valueChanges.subscribe(value => {
+        // assuming value is an object with name property
+        if (value?.name === 'Food') {
+          const descriptionControl = form.get('description');
+          if (descriptionControl) {
+            descriptionControl.setValue('Food', { emitEvent: false });
+          }
+        }
+      });
+    }
+  }
+
 
   onProductAdded(newProduct: any) {
-    var product: Product = {
+    const product: Product = {
       id: 0,
       name: newProduct.name,
       price: newProduct.price,
       description: newProduct.description,
-      categoryId: newProduct.category,
+      categoryId: newProduct.category?.id,
       isDeleted: false,
       productQR: newProduct.productQR,
-      condition: newProduct.condition,
-      isHiddenSellerInfo: newProduct.isHiddenSellerInfo ?? false,
-      sellerId: newProduct.seller,
-      isPublished: newProduct.isPublished ?? false,
+      condition: newProduct.condition?.id,
+      isHiddenSellerInfo: newProduct.isHiddenSellerInfo.value ?? false,
+      sellerId: newProduct.seller?.id,
+      isPublished: newProduct.isPublished.value ?? false,
     };
-    this.store.dispatch(ProductActions.createProduct({ product: product }));
+    this.store.dispatch(ProductActions.createProduct({ product }));
   }
 
   onProductDeleted(deletedProduct: Product) {
@@ -125,21 +177,21 @@ export class ProductListComponent implements OnInit {
   }
 
   onProductEdited(event: { index: number; row: any }) {
-    var product: Product = {
+    const product: Product = {
       id: event.row.id,
       name: event.row.name,
       price: event.row.price,
       description: event.row.description,
-      categoryId: event.row.category,
+      categoryId: event.row.category.id,
       isDeleted: false,
       productQR: event.row.productQR,
-      condition: event.row.condition,
-      isHiddenSellerInfo: event.row.isHiddenSellerInfo,
-      sellerId: event.row.seller,
-      isPublished: event.row.isPublished,
+      condition: event.row.condition?.id,
+      isHiddenSellerInfo: event.row.isHiddenSellerInfo.value ?? false,
+      sellerId: event.row.seller.id,
+      isPublished: event.row.isPublished.value ?? false,
     };
 
-    this.store.dispatch(ProductActions.updateProduct({ product: product }));
+    this.store.dispatch(ProductActions.updateProduct({ product }));
   }
 
   onProductReordered(reordered: any) {

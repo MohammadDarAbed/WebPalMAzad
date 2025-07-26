@@ -1,0 +1,16 @@
+  <mat-select
+    [formControl]="formControl"
+    (selectionChange)="onSelectionChange($event.value)"
+    [placeholder]="placeholder || 'Select...'"
+    [class.invalid]="formControl.touched && formControl.invalid"
+    [compareWith]="compareObjectsFn"    
+  >
+    <!-- options -->
+    <mat-option *ngFor="let item of options" [value]="item">
+      {{ item[textField] }}
+    </mat-option>
+
+  </mat-select>
+  <mat-error *ngIf="formControl?.touched && formControl?.invalid" class="error-text">
+   {{ getErrorMessage() }}
+  </mat-error>

@@ -10,17 +10,32 @@ export enum EditableGridCellType {
   comboBox = 'comboBox',
 }
 
+export enum textcolumnPosition {
+  Center = "Center",
+  Left = "Left",
+  Right = "Right"
+}
+
+export const BooleanOptions = [
+  { id: 1, value: false, label: "False" },
+  { id: 2, value: true, label: "True" }
+];
+
 // Represents a single column definition
 export interface TableColumn<T = any> {
   key: string;            // property name in row data
   label: string;                    // header label
   type: EditableGridCellType // input type
-  options?: { value: any; label: string }[]; // for select dropdown
+  options?: any[]; // for select dropdown
   sortable?: boolean;               // enable sorting
   filterable?: boolean;             // enable filtering
   width?: number;                   // optional width (e.g. '150px')
-  previewKey?: string;              // optional nested property path for preview
-  valueKey?: string;                // optional nested property path for form control value
+  previewKey: string;              // optional nested property path for preview
+  valueKey: string;                // optional nested property path for form control value
+  placeholder: string;
+  labelKey: string;
+  textPosition?: textcolumnPosition;
+  textSize?: number;
 }
 
 export interface TableColumnWithStringKey<T> extends TableColumn<T> {

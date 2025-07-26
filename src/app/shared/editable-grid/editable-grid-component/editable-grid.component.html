@@ -9,7 +9,7 @@
     <!-- Dynamic columns -->
     <ng-container *ngFor="let col of config.columns" [matColumnDef]="col.key">
       <th mat-header-cell *matHeaderCellDef cdkDrag (click)="col.sortable ? onSort(col.key) : null"
-        [style.width]=`${col.width}px`>
+        [ngStyle]="{ 'text-align': col.textPosition, 'font-size': `${col.textSize}px`, 'width': col.width}">
         <div class="header-cell-content">
           <span>{{ col.label }}</span>
           <span *ngIf="col.sortable">
@@ -23,19 +23,26 @@
           (ngModelChange)="onFilterChange(col.key, $event)" />
       </th>
       <td mat-cell *matCellDef="let row; let i = index" [ngSwitch]="editingRowIndices.has(i) && config.editable"
-        [style.width]=`${col.width}px`>
+        [ngStyle]="{ 'text-align': col.textPosition, 'font-size': `${col.textSize}px`, 'width': col.width}">
         <ng-container *ngSwitchCase="true">
           <ng-container *ngIf="editingForms.get(i) as formGroup">
             <ng-container [formGroup]="formGroup" [ngSwitch]="col.type">
-              <input *ngSwitchCase="'text'" matInput [formControlName]="col.key" #firstEditableInput 
+              <input *ngSwitchCase="'text'" matInput [formControlName]="col.key" #firstEditableInput
                 [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
-              <input [type]="col.type || 'text'" min="0" *ngSwitchCase="'number'" matInput [formControlName]="col.key"
+              <input *ngSwitchCase="'number'" type="number" matInput [formControlName]="col.key"
                 [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
               <input *ngSwitchCase="'readOnly'" matInput [formControlName]="col.key" [readonly]="true" />
-              <mat-select *ngSwitchCase="'select'" [formControlName]="col.key"
-                [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)">
-                <mat-option *ngFor="let opt of col.options" [value]="opt.value">{{ opt.label }}</mat-option>
-              </mat-select>
+              <ng-container *ngSwitchCase="'select'">
+                <app-combobox-field
+                  [formControl]="getFormControl(i, col.key)"
+                  [options]="col.options || []"
+                  [textField]="col.labelKey"
+                  [validators]="validators[col.key]?.validators || []"
+                  [valueField]="col.valueKey"
+                  [placeholder]="col.placeholder"
+                  appearance="outline">
+                </app-combobox-field>
+              </ng-container>
               <input *ngSwitchCase="'date'" matInput [matDatepicker]="picker" [formControlName]="col.key" />
               <mat-datepicker-toggle *ngSwitchCase="'date'" matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
@@ -55,12 +62,12 @@
 
     <!-- Actions column -->
     <ng-container *ngIf="!config.readOnly" matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef cdkDrag [style.width]=`${config.actionsColumnWidth}px`> Actions </th>
+      <th mat-header-cell *matHeaderCellDef cdkDrag [style.width.px]="config.actionsColumnWidth"> Actions </th>
       <td mat-cell *matCellDef="let row; let i = index">
         <button mat-icon-button *ngIf="!editingRowIndices.has(i) && config.editable" (click)="startEdit(i)">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button *ngIf="editingRowIndices.has(i)" (click)="saveEdit(i)">
+        <button [disabled]="isRowValid(i)" *ngIf="editingRowIndices.has(i)" (click)="saveEdit(i)">
           <mat-icon>save</mat-icon>
         </button>
         <button mat-icon-button *ngIf="editingRowIndices.has(i)" (click)="cancelEdit(i)">
@@ -73,14 +80,12 @@
     </ng-container>
 
     <!-- Header row -->
-    <tr mat-header-row *matHeaderRowDef="config.readOnly ? displayedColumns : displayedColumns.concat(['actions'])">
-    </tr>
+    <tr mat-header-row *matHeaderRowDef="config.readOnly ? displayedColumns : displayedColumns.concat(['actions'])"></tr>
 
+    <!-- Data rows -->
     <tr mat-row
-      *matRowDef="let row; let i = index; columns: config.readOnly ? displayedColumns : displayedColumns.concat(['actions']); trackBy: trackById"
-      cdkDrag cdkDragLockAxis="y" cdkDragBoundary=".mat-table" [cdkDragData]="row">
+        *matRowDef="let row; columns: config.readOnly ? displayedColumns : displayedColumns.concat(['actions']);">
     </tr>
-
 
     <!-- Footer row for totals -->
     <tr class="footer-row">

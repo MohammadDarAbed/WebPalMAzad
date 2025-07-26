@@ -3,76 +3,76 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
-import * as CategoryActions from './category.actions';
+import * as UserActions from './Users.actions';
 import * as NotificationActions from '../../../shared/notifications/store/notification.actions';
 import { NotificationModel, NotificationType } from '../../../shared/notifications/snackbar.model';
 import { ErrorsModel } from '../../../shared/models/errors.model';
-import { CategoryService } from '../services/category.service';
-import { Category } from '../Models/category.model';
+import { User } from '../models/user.model';
+import { UserService } from './services/Users.service';
 
 @Injectable()
-export class CategoryEffects {
-  loadCategories$;
-  loadCategoryById$;
-  createCategory$;
-  updateCategory$;
-  deleteCategory$;
-  createCategorySuccess$;
-  createCategoryFailure$;
-  updateCategorySuccess$;
-  deleteCategorySuccess$;
-  deleteCategoryFailure$;
-  updateCategoryFailure$;
+export class UsersEffects {
+  loadUsers$;
+  loadUserById$;
+  createUser$;
+  updateUser$;
+  deleteUser$;
+  createUserSuccess$;
+  createUserFailure$;
+  updateUserSuccess$;
+  deleteUserSuccess$;
+  deleteUserFailure$;
+  updateUserFailure$;
 
   constructor(
     private readonly actions$: Actions,
-    private readonly categoryService: CategoryService
+    private readonly userService: UserService
   ) {
-    this.loadCategories$ = createEffect(() =>
+    this.loadUsers$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(CategoryActions.loadCategories),
+        ofType(UserActions.loadUsers),
         mergeMap(() =>
-          this.categoryService.getCategories().pipe(
-            map(categories => CategoryActions.loadCategoriesSuccess({ categories })),
-            catchError((error: ErrorsModel<Category>) =>
-              of(CategoryActions.loadCategoriesFailure({ error }))
+          this.userService.getUsers().pipe(
+            map(users => UserActions.loadUsersSuccess({ users })),
+            catchError((error: ErrorsModel<User>) =>
+              of(UserActions.loadUsersFailure({ error }))
             )
           )
         )
       )
     );
 
-    this.loadCategoryById$ = createEffect(() =>
+    this.loadUserById$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(CategoryActions.loadCategoryById),
-        mergeMap(({ id }) =>
-          this.categoryService.getCategoryById(id).pipe(
-            map(category => CategoryActions.loadCategoryByIdSuccess({ category })),
-            catchError(error =>
-              of(CategoryActions.loadCategoriesFailure({ error }))
-            )
-          )
-        )
-      )
-    );
-
-    this.createCategory$ = createEffect(() =>
-      this.actions$.pipe(
-        ofType(CategoryActions.createCategory),
+        ofType(UserActions.loadUserById),
         mergeMap((action) =>
-          this.categoryService.createCategory(action.category).pipe(
-            map(category => CategoryActions.createCategorySuccess({ category })),
-            catchError((error: ErrorsModel<Category>) =>
-              of(CategoryActions.createCategoryFailure({ error }))
+          this.userService.getUserById(action.id).pipe(
+            map(user => UserActions.loadUserByIdSuccess({ user })),
+            catchError(error =>
+              of(UserActions.loadUsersFailure({ error }))
             )
           )
         )
       )
     );
 
-    this.createCategoryFailure$ = createEffect(() =>
+    this.createUser$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(CategoryActions.createCategoryFailure),
+        ofType(UserActions.createUser),
+        mergeMap((action) =>
+          this.userService.createUser(action.user).pipe(
+            map(user => UserActions.createUserSuccess({ user })),
+            catchError((error: ErrorsModel<User>) =>
+              of(UserActions.createUserFailure({ error }))
+            )
+          )
+        )
+      )
+    );
+
+    this.createUserFailure$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(UserActions.createUserFailure),
         mergeMap((action) => {
           const notification: NotificationModel = {
             id: Date.now(),
@@ -86,13 +86,13 @@ export class CategoryEffects {
       )
     );
 
-    this.createCategorySuccess$ = createEffect(() =>
+    this.createUserSuccess$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(CategoryActions.createCategorySuccess),
+        ofType(UserActions.createUserSuccess),
         mergeMap((action) => {
           const notification: NotificationModel = {
             id: Date.now(),
-            text: `Category created successfully: ${action.category.name}`,
+            text: `User created successfully: ${action.user.name}`,
             type: NotificationType.Information,
             autoDisappear: true,
           };
@@ -101,27 +101,27 @@ export class CategoryEffects {
       )
     );
 
-    this.updateCategory$ = createEffect(() =>
+    this.updateUser$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(CategoryActions.updateCategory),
+        ofType(UserActions.updateUser),
         mergeMap((action) =>
-          this.categoryService.updateCategory(action.category).pipe(
-            map(category => CategoryActions.updateCategorySuccess({ category })),
-            catchError((error: ErrorsModel<Category>) =>
-              of(CategoryActions.updateCategoryFailure({ error }))
+          this.userService.updateUser(action.user).pipe(
+            map(user => UserActions.updateUserSuccess({ user })),
+            catchError((error: ErrorsModel<User>) =>
+              of(UserActions.updateUserFailure({ error }))
             )
           )
         )
       )
     );
 
-    this.updateCategorySuccess$ = createEffect(() =>
+    this.updateUserSuccess$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(CategoryActions.updateCategorySuccess),
+        ofType(UserActions.updateUserSuccess),
         mergeMap((action) => {
           const notification: NotificationModel = {
             id: Date.now(),
-            text: `Category updated successfully: ${action.category.name}`,
+            text: `User updated successfully: ${action.user.name}`,
             type: NotificationType.Information,
             autoDisappear: true,
           };
@@ -130,9 +130,9 @@ export class CategoryEffects {
       )
     );
 
-    this.updateCategoryFailure$ = createEffect(() =>
+    this.updateUserFailure$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(CategoryActions.updateCategoryFailure),
+        ofType(UserActions.updateUserFailure),
         mergeMap((action) => {
           const notification: NotificationModel = {
             id: Date.now(),
@@ -146,27 +146,27 @@ export class CategoryEffects {
       )
     );
 
-    this.deleteCategory$ = createEffect(() =>
+    this.deleteUser$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(CategoryActions.deleteCategory),
+        ofType(UserActions.deleteUser),
         mergeMap((action) =>
-          this.categoryService.deleteCategory(action.id).pipe(
-            map(id => CategoryActions.deleteCategorySuccess({ id })),
+          this.userService.deleteUser(action.id).pipe(
+            map(id => UserActions.deleteUserSuccess({ id })),
             catchError(error =>
-              of(CategoryActions.deleteCategoryFailure({ error }))
+              of(UserActions.deleteUserFailure({ error }))
             )
           )
         )
       )
     );
 
-    this.deleteCategorySuccess$ = createEffect(() =>
+    this.deleteUserSuccess$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(CategoryActions.deleteCategorySuccess),
+        ofType(UserActions.deleteUserSuccess),
         mergeMap(() => {
           const notification: NotificationModel = {
             id: Date.now(),
-            text: `Category deleted successfully!`,
+            text: `User deleted successfully!`,
             type: NotificationType.Information,
             autoDisappear: true,
           };
@@ -175,9 +175,9 @@ export class CategoryEffects {
       )
     );
 
-    this.deleteCategoryFailure$ = createEffect(() =>
+    this.deleteUserFailure$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(CategoryActions.deleteCategoryFailure),
+        ofType(UserActions.deleteUserFailure),
         mergeMap((action) => {
           const notification: NotificationModel = {
             id: Date.now(),
