@@ -35,11 +35,11 @@
               <ng-container *ngSwitchCase="'select'">
                 <app-combobox-field
                   [formControl]="getFormControl(i, col.key)"
-                  [data]="col.options || []"
+                  [options]="col.options || []"
                   [textField]="col.labelKey"
                   [validators]="validators[col.key]?.validators || []"
                   [valueField]="col.valueKey"
-                  [placeholder]="col.placeholder || ''"
+                  [placeholder]="col.placeholder"
                   appearance="outline">
                 </app-combobox-field>
               </ng-container>
@@ -67,7 +67,7 @@
         <button mat-icon-button *ngIf="!editingRowIndices.has(i) && config.editable" (click)="startEdit(i)">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button *ngIf="editingRowIndices.has(i)" (click)="saveEdit(i)">
+        <button [disabled]="isRowValid(i)" *ngIf="editingRowIndices.has(i)" (click)="saveEdit(i)">
           <mat-icon>save</mat-icon>
         </button>
         <button mat-icon-button *ngIf="editingRowIndices.has(i)" (click)="cancelEdit(i)">

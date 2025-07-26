@@ -1,22 +1,16 @@
   <mat-select
     [formControl]="formControl"
     (selectionChange)="onSelectionChange($event.value)"
-    [placeholder]="placeholder"
+    [placeholder]="placeholder || 'Select...'"
     [class.invalid]="formControl.touched && formControl.invalid"
     [compareWith]="compareObjectsFn"    
   >
-  
-    <!-- placeholder -->
-    <!-- <mat-option [value]="null" disabled>
-      {{ placeholder }}
-    </mat-option> -->
-
     <!-- options -->
-    <mat-option *ngFor="let item of data" [value]="item">
+    <mat-option *ngFor="let item of options" [value]="item">
       {{ item[textField] }}
     </mat-option>
+
   </mat-select>
-  <!-- عرض رسالة الخطأ في حال التفاعل -->
   <mat-error *ngIf="formControl?.touched && formControl?.invalid" class="error-text">
    {{ getErrorMessage() }}
   </mat-error>

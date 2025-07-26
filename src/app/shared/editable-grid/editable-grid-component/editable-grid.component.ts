@@ -312,6 +312,10 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
   getFormControl(rowIndex: number, key: string): FormControl {
     return this.editingForms.get(rowIndex)?.get(key) as FormControl;
   }
+
+  isRowValid(index: number): boolean | undefined {
+    return !this.editingForms.get(index)?.valid
+  }
   // #endregion
 
 
@@ -425,7 +429,12 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
         group[col.key] = new FormControl(value);
       } else if (col.type && col.type !== EditableGridCellType.readonly) {
         if (col.type === EditableGridCellType.select && col.options?.length) {
-          var value = col.key ? row[col.key] : this.getNestedValue(row[col.key], col.valueKey); // give the selected value as an object
+          if (typeof row[col.key] === 'object') {
+            var value = col.key ? row[col.key] : this.getNestedValue(row[col.key], col.valueKey); // give the selected value as an object
+          } else { // if the value is not object find the object from the options
+            const matchedObject = col.options.find(op => op[col.valueKey] === row[col.key]);
+            value = matchedObject || null;
+          }
         } else {
           value = col.valueKey ? this.getNestedValue(row, col.valueKey) : (row as any)[col.key];
         }

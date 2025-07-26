@@ -33,14 +33,14 @@ export class CustomComboboxFieldComponent implements ControlValueAccessor, OnIni
     return o1[this.valueField] === o2[this.valueField];
   };
   @Input()
-  set data(value: any[]) {
-    this._data = value || [];
+  set options(value: any[]) {
+    this._options = value || [];
   }
-  get data(): any[] {
-    return this._data;
+  get options(): any[] {
+    return this._options;
   }
   formControl: FormControl = new FormControl();
-  private _data: any[] = [];
+  private _options: any[] = [];
   selectedItem: any = null;
   onChange = (_: any) => { };
   onTouched = () => { };
@@ -66,10 +66,10 @@ export class CustomComboboxFieldComponent implements ControlValueAccessor, OnIni
 
   writeValue(value: any): void {
     if (value !== null && typeof value !== 'object') {
-      const matchedObject = this.data.find(item => item[this.valueField] == value);
+      const matchedObject = this.options.find(op => op[this.valueField] == value);
       this.selectedItem = matchedObject || null;
     } else if (typeof value === 'object') {
-      const matchedObject = this.data.find(item => this.compareObjectsFn(item, value));
+      const matchedObject = this.options.find(op => this.compareObjectsFn(op, value));
       this.selectedItem = matchedObject || null;
     } else {
       this.selectedItem = null;

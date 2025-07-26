@@ -32,7 +32,7 @@ export interface TableColumn<T = any> {
   width?: number;                   // optional width (e.g. '150px')
   previewKey: string;              // optional nested property path for preview
   valueKey: string;                // optional nested property path for form control value
-  placeholder?: string;
+  placeholder: string;
   labelKey: string;
   textPosition?: textcolumnPosition;
   textSize?: number;
