@@ -16,7 +16,7 @@ export interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:5001/api/auth';
+  private readonly apiUrl = 'https://localhost:5003/api/auth';
   private isLoggedInSubject$: BehaviorSubject<boolean>;
   readonly isLoggedIn$: Observable<boolean>;
 

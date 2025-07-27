@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CategoryService {
-  private apiUrl = 'http://localhost:5000/Category'; // adjust to your backend
+  private apiUrl = 'https://localhost:5001/Category'; // adjust to your backend
 
   constructor(private http: HttpClient) { }
 
