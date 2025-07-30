@@ -1,0 +1,16 @@
+<div class="tree-menu">
+  <div *ngFor="let group of menuGroups" class="menu-group">
+    <!-- Group Header -->
+    <div class="group-title" (click)="toggleGroup(group.key)">
+      <span>{{ group.name }}</span>
+      <span class="arrow" [class.expanded]="isExpanded(group.key)">▶</span>
+    </div>
+
+    <!-- Collapsible Items -->
+    <ul *ngIf="isExpanded(group.key)" class="menu-items">
+      <li *ngFor="let item of group.menuItems" (click)="onMenuItemClick(item)">
+        {{ item.name }}
+      </li>
+    </ul>
+  </div>
+</div>

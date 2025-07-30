@@ -1,10 +1,17 @@
-<div class="home-container">
-  <h1>Welcome to PalMazad 👋</h1>
-  <p class="subtitle">Your smart dropshipping assistant.</p>
+<div class="home-layout" [class.collapsed]="isCollapsed">
+  <aside class="sidebar">
+        <div class="sidebar-header">
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        <span [class.expanded]="isCollapsed">◀</span>
+      </button>
+    </div>
+    <app-tree-menu [menuGroups]="menuTree"></app-tree-menu>
+  </aside>
+  <main class="blade-area">
+    <router-outlet></router-outlet> <!-- Products/Categories/.. load here -->
+  </main>
 
-  <div class="actions">
-    <button (click)="onBrowse()">🛍️ Browse Products</button>
-    <button (click)="onManage()">🏪 My Store</button>
-    <button (click)="logout()">🚪 Logout</button>
-  </div>
 </div>
+<!-- <main class="blade-area">
+    <app-blade-container></app-blade-container>
+</main> -->

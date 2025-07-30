@@ -14,7 +14,9 @@
   flex-shrink: 0;
   display: flex;
   text-align: left;
-  justify-content: space-between; /* pushes items to far left and far right */
+  justify-content: space-between;
+  height: 15px;
+  /* pushes items to far left and far right */
 }
 
 .right-content,
@@ -37,6 +39,7 @@ button {
   padding: $app-padding;
   flex-shrink: 0;
   text-align: center;
+  height: 10px;
 }
 
 .app-content {
