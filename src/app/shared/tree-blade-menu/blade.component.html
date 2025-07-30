@@ -1,0 +1,14 @@
+<div class="blade">
+  <header>
+    <h2>{{ blade.title }}</h2>
+    <button class="close-btn" (click)="close.emit()">X</button>
+  </header>
+
+  <main>
+    <p>Content for {{ blade.title }} loaded from {{ blade.contentUrl }}</p>
+  </main>
+
+  <footer>
+    <button (click)="openChildBlade()">Open Child Blade</button>
+  </footer>
+</div>

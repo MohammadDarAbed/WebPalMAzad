@@ -1,0 +1,22 @@
+<div class="blade-container">
+  <div *ngFor="let blade of blades$ | async" class="blade">
+    <div class="blade-header">
+      <h3>{{ blade.title }}</h3>
+      <button (click)="closeBlade(blade.key)">✖</button>
+    </div>
+
+    <div class="blade-content">
+      <!-- 1️⃣ Dynamic Angular Component -->
+      <ng-container *ngIf="blade.component">
+      <ng-container *ngComponentOutlet="blade.component; injector: blade.data">
+                    </ng-container>
+      </ng-container>
+
+      <!-- 2️⃣ Angular Router Outlet -->
+      <router-outlet *ngIf="blade.url"></router-outlet>
+
+      <!-- 3️⃣ External URL via iframe -->
+      <iframe *ngIf="blade.contentUrl" [src]="blade.contentUrl" frameborder="0"></iframe>
+    </div>
+  </div>
+</div>

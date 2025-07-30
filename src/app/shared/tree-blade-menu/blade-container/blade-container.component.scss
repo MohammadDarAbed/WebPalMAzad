@@ -1,0 +1,28 @@
+.blade-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    overflow-x: auto;
+}
+
+.blade {
+    width: 400px;
+    border-left: 1px solid #ddd;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.blade-header {
+    background: #f4f4f4;
+    padding: 8px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+
+.blade-content {
+    flex: 1;
+    overflow: auto;
+    padding: 10px;
+}

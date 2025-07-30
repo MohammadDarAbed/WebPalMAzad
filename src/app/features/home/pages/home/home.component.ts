@@ -1,26 +1,34 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../../core/Services/auth.service';
-import { Router } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
+import { TreeMenuItem, TreeMenuItemGroup } from '../../../../shared/tree-blade-menu/models/tree-menu.model';
+import { TreeMenuComponent } from '../../../../shared/tree-blade-menu/tree-menu/tree-menu.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  // standalone: true,
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [],
+  imports: [CommonModule, TreeMenuComponent, RouterOutlet],
 })
 export class HomeComponent {
-  constructor(private authService: AuthService, private readonly router: Router) {}
+  isCollapsed = false; // Sidebar state
 
-  onBrowse() {
-    // Placeholder action
-    // alert('Feature coming soon: Browse Products');
-    this.router.navigate(['/products']);
-  }
+  constructor(private authService: AuthService) { }
 
-  onManage() {
-    // Placeholder action
-    alert('Feature coming soon: My Store');
+  menuTree = [
+    new TreeMenuItemGroup('products', 'Products', [
+      new TreeMenuItem('list', 'Product List', 'products'),
+      new TreeMenuItem('categories', 'Categories', 'categories'),
+    ]),
+    new TreeMenuItemGroup('orders', 'Orders', [
+      new TreeMenuItem('list', 'Order List', '/blades/orders/list'),
+      new TreeMenuItem('returns', 'Returns', '/blades/orders/returns')
+    ])
+  ];
+
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
   }
 
   logout() {
