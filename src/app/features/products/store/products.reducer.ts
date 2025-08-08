@@ -9,6 +9,7 @@ export interface ProductState {
   totalResults: number;
   lastDeletedProductId: number | null;
   lastCreatedProduct: Product | null;
+  lastUpdatedProduct: Product | null;
 }
 
 export const initialState: ProductState = {
@@ -17,7 +18,8 @@ export const initialState: ProductState = {
   error: null,
   totalResults: 0,
   lastDeletedProductId: null,
-  lastCreatedProduct: null
+  lastCreatedProduct: null,
+  lastUpdatedProduct: null
 };
 
 export const productsReducer = createReducer(
@@ -43,7 +45,8 @@ export const productsReducer = createReducer(
       loading: false,
       error: action.error,
       lastDeletedProductId: null,
-      lastCreatedProduct: null
+      lastCreatedProduct: null,
+      lastUpdatedProduct: null
     })),
   on(ProductActions.loadProductByIdSuccess, (state, { product }) => ({
     ...state,
@@ -64,6 +67,7 @@ export const productsReducer = createReducer(
     ...state,
     loading: false,
     products: state.products.map(p => p.id === product.id ? product : p),
+    lastUpdatedProduct: product,
     error: null
   })),
   on(ProductActions.deleteProductSuccess, (state, { id }) => ({

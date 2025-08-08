@@ -9,6 +9,7 @@ export interface CategoryState {
   totalResults: number;
   lastCreatedCategory: Category | null;
   lastDeletedCategoryId: number | null;
+  lastUpdatedCategory: Category | null;
 }
 
 export const initialState: CategoryState = {
@@ -17,7 +18,8 @@ export const initialState: CategoryState = {
   error: null,
   totalResults: 0,
   lastCreatedCategory: null,
-  lastDeletedCategoryId: null
+  lastDeletedCategoryId: null,
+  lastUpdatedCategory: null
 };
 
 export const CategoryReducer = createReducer(
@@ -43,7 +45,8 @@ export const CategoryReducer = createReducer(
       loading: false,
       error: action.error,
       lastCreatedCategory: null,
-      lastDeletedCategoryId: null
+      lastDeletedCategoryId: null,
+      lastUpdatedCategory: null
     })),
   on(CategoryActions.loadCategoryByIdSuccess, (state, { category }) => ({
     ...state,
@@ -64,6 +67,7 @@ export const CategoryReducer = createReducer(
     ...state,
     loading: false,
     categories: state.categories.map(p => p.id === category.id ? category : p),
+    lastUpdatedCategory: category,
     error: null
   })),
   on(CategoryActions.deleteCategorySuccess, (state, { id }) => ({

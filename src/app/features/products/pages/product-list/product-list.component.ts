@@ -5,7 +5,7 @@ import * as CategoryActions from '../../../categories/store/category.actions';
 import * as UsersActions from '../../../users/store/Users.actions';
 import { Observable, Subject } from 'rxjs';
 import { Product } from '../../models/product.model';
-import { selectAllProducts, selectProductLoading, selectProductError, selectLastDeletedProductId, selectLastCreatedProductId } from '../../store/products.selectors';
+import { selectAllProducts, selectProductLoading, selectProductError, selectLastDeletedProductId, selectLastCreatedProductId, selectLastUpdatedProductId } from '../../store/products.selectors';
 import { CommonModule } from '@angular/common';
 import { TableColumn, TableConfig } from '../../../../shared/editable-grid/table-column';
 import { ProductGridConfig } from '../../models/product-grid-form';
@@ -79,6 +79,7 @@ export class ProductListComponent implements OnInit {
     config: this.tableConfig,
     lastCreatedItem$: new Subject<Product>(),
     lastDeletedItemId$: new Subject<number>(),
+    lastUpdatedItem$: new Subject<Product>(),
   };
 
   constructor(private store: Store<ProductState>) {
@@ -114,6 +115,9 @@ export class ProductListComponent implements OnInit {
     );
     this.gridModel.lastCreatedItem$ = this.store.pipe(
       select(selectLastCreatedProductId)
+    );
+    this.gridModel.lastUpdatedItem$ = this.store.pipe(
+      select(selectLastUpdatedProductId)
     );
   }
 

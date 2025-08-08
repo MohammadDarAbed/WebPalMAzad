@@ -6,7 +6,7 @@ import { Category } from '../Models/category.model';
 import { Observable, Subject } from 'rxjs';
 import * as CategoryActions from '../store/category.actions';
 import { select, Store } from '@ngrx/store';
-import { selectAllCategories, selectLastCreatedCategoryId, selectLastDeletedCategoryId } from '../store/category.selectors';
+import { selectAllCategories, selectLastCreatedCategoryId, selectLastDeletedCategoryId, selectLastUpdatedCategoryId } from '../store/category.selectors';
 import { EditableGridModel } from '../../../shared/models/editable-grid.model';
 import { TableColumn, TableConfig } from '../../../shared/editable-grid/table-column';
 import { CategoryGridConfig } from '../Models/CategoryGridConfig';
@@ -36,6 +36,7 @@ export class CategoriesComponent implements OnInit {
     validators: this.validators,
     config: this.tableConfig,
     lastCreatedItem$: new Subject<Category>(),
+    lastUpdatedItem$: new Subject<Category>(),
     lastDeletedItemId$: new Subject<number>(),
   };
   categories$: Observable<Category[]> | undefined;
@@ -56,7 +57,9 @@ export class CategoriesComponent implements OnInit {
     this.gridModel.lastCreatedItem$ = this.store.pipe(
       select(selectLastCreatedCategoryId)
     );
-
+    this.gridModel.lastUpdatedItem$ = this.store.pipe(
+      select(selectLastUpdatedCategoryId)
+    );
   }
 
   onCellValueChanged(event: { row: any; key: string; value: any }) {
