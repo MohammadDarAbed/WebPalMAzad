@@ -106,7 +106,7 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
       if (!this.dateFields.includes(c.key)) this.dateFields.push(c.key);
     });
 
-    this.subscribeToLastCreatedAndDeleted(value);
+    this.subscribeToLastCreatedAndDeletedAndUpdated(value);
     this.changeDetectorRef.detectChanges();
   }
   // #endregion
@@ -351,8 +351,6 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
     } else {                              // Edited existing row
       this.rowEditedIndex = index;
       this.rowEdited.emit({ index: index, row: editedRow });
-      this.editingRowIndices.delete(index);
-      this.editingForms.delete(index);
     }
     this.changeDetectorRef.markForCheck(); // Trigger UI update if OnPush used
 
@@ -466,7 +464,7 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
   }
 
 
-  private subscribeToLastCreatedAndDeleted(model: EditableGridModel<T>) {
+  private subscribeToLastCreatedAndDeletedAndUpdated(model: EditableGridModel<T>) {
     if (model.lastDeletedItemId$) {
       model.lastDeletedItemId$
         .pipe(takeUntil(this.destroyed$))
@@ -482,7 +480,6 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
       model.lastCreatedItem$
         .pipe(takeUntil(this.destroyed$))
         .subscribe((item) => {
-          console.log("lastCreatedItem: ", item);
           if (item && (item as any)?.id !== null) {
             // check if it is already exist
             const exists = this.orderedItems.some(i => (i as any).id === (item as any).id);
@@ -490,6 +487,22 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
               this.newRowIndices.delete(this.newRowAddedIndex);
               this.editingRowIndices.delete(this.newRowAddedIndex);
               this.editingForms.delete(this.newRowAddedIndex);
+              this.refreshData();
+              this.applyFilters();
+            }
+          }
+        });
+    }
+    if (model.lastUpdatedItem$) {
+      model.lastUpdatedItem$
+        .pipe(takeUntil(this.destroyed$))
+        .subscribe((item) => {
+          if (item && (item as any)?.id !== null) {
+            // check if it is already exist
+            const exists = this.orderedItems.some(i => (i as any).id === (item as any).id);
+            if (exists) {
+              this.editingRowIndices.delete(this.rowEditedIndex);
+              this.editingForms.delete(this.rowEditedIndex);
               this.refreshData();
               this.applyFilters();
             }

@@ -7,5 +7,6 @@ export interface EditableGridModel<T> {
     validators?: { [key: string]: any };       // optional per-field validators
     lastDeletedItemId$: Observable<number | null>;
     lastCreatedItem$: Observable<T | null>;
+    lastUpdatedItem$: Observable<T | null>;
     config?: Partial<TableConfig<T>>;         // override any config flags
 }

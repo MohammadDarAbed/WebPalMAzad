@@ -27,3 +27,8 @@ export const selectLastCreatedCategoryId = createSelector(
   selectCategoryFeature,
   (state) => state.lastCreatedCategory
 );
+
+export const selectLastUpdatedCategoryId = createSelector(
+  selectCategoryFeature,
+  (state) => state.lastUpdatedCategory
+);
