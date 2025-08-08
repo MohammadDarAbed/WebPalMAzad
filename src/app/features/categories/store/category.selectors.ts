@@ -17,3 +17,13 @@ export const selectCategoryError = createSelector(
   selectCategoryFeature,
   (state) => state.error
 );
+
+export const selectLastDeletedCategoryId = createSelector(
+  selectCategoryFeature,
+  (state) => state.lastDeletedCategoryId
+);
+
+export const selectLastCreatedCategoryId = createSelector(
+  selectCategoryFeature,
+  (state) => state.lastCreatedCategory
+);

@@ -36,10 +36,10 @@
                 <app-combobox-field
                   [formControl]="getFormControl(i, col.key)"
                   [options]="col.options || []"
-                  [textField]="col.labelKey"
+                  [textField]="col.labelKey || ''"
                   [validators]="validators[col.key]?.validators || []"
-                  [valueField]="col.valueKey"
-                  [placeholder]="col.placeholder"
+                  [valueField]="col.valueKey || ''"
+                  [placeholder]="col.placeholder || ''"
                   appearance="outline">
                 </app-combobox-field>
               </ng-container>
@@ -62,7 +62,7 @@
 
     <!-- Actions column -->
     <ng-container *ngIf="!config.readOnly" matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef cdkDrag [style.width.px]="config.actionsColumnWidth"> Actions </th>
+      <th mat-header-cell *matHeaderCellDef cdkDrag [style.width.px]="config.actionsColumnWidth" style="text-align: center;"> Actions </th>
       <td mat-cell *matCellDef="let row; let i = index">
         <button mat-icon-button *ngIf="!editingRowIndices.has(i) && config.editable" (click)="startEdit(i)">
           <mat-icon>edit</mat-icon>
