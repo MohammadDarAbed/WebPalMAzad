@@ -3,7 +3,7 @@ import { select, Store } from '@ngrx/store';
 import * as ProductActions from '../../store/products.actions';
 import * as CategoryActions from '../../../categories/store/category.actions';
 import * as UsersActions from '../../../users/store/Users.actions';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Product } from '../../models/product.model';
 import { selectAllProducts, selectProductLoading, selectProductError, selectLastDeletedProductId, selectLastCreatedProductId } from '../../store/products.selectors';
 import { CommonModule } from '@angular/common';
@@ -76,7 +76,9 @@ export class ProductListComponent implements OnInit {
     data: [],
     columns: this.tableConfig.columns,
     validators: this.validators,
-    config: this.tableConfig
+    config: this.tableConfig,
+    lastCreatedItem$: new Subject<Product>(),
+    lastDeletedItemId$: new Subject<number>(),
   };
 
   constructor(private store: Store<ProductState>) {

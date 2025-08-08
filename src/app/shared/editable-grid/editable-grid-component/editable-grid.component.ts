@@ -38,8 +38,8 @@ import { EditableGridModel } from '../../models/editable-grid.model';
 export class RowValuePipe implements PipeTransform {
   counter = 0;
 
-  private getNestedValue(obj: any, path: string): any { // TODO: Remove this method after enhance the select fields
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  private getNestedValue(obj: any, path?: string): any {
+    return path?.split('.').reduce((acc, part) => acc && acc[part], obj);
   }
 
   transform(row: any, key: string, columns: TableColumn<any>[]): any {
@@ -416,8 +416,8 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
   }
 
 
-  private getNestedValue(obj: any, path: string): any {
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  private getNestedValue(obj: any, path?: string): any {
+    return path?.split('.').reduce((acc, part) => acc && acc[part], obj);
   }
 
   private createFormGroup(row: any, rowIndex?: number): FormGroup {
@@ -432,7 +432,7 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
           if (typeof row[col.key] === 'object') {
             var value = col.key ? row[col.key] : this.getNestedValue(row[col.key], col.valueKey); // give the selected value as an object
           } else { // if the value is not object find the object from the options
-            const matchedObject = col.options.find(op => op[col.valueKey] === row[col.key]);
+            const matchedObject = col.options.find(op => op[col.valueKey || ''] === row[col.key]);
             value = matchedObject || null;
           }
         } else {

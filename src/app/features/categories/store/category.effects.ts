@@ -61,7 +61,7 @@ export class CategoryEffects {
         ofType(CategoryActions.createCategory),
         mergeMap((action) =>
           this.categoryService.createCategory(action.category).pipe(
-            map(category => CategoryActions.createCategorySuccess({ category })),
+            map(() => CategoryActions.createCategorySuccess({ category: action.category })),
             catchError((error: ErrorsModel<Category>) =>
               of(CategoryActions.createCategoryFailure({ error }))
             )
@@ -151,7 +151,7 @@ export class CategoryEffects {
         ofType(CategoryActions.deleteCategory),
         mergeMap((action) =>
           this.categoryService.deleteCategory(action.id).pipe(
-            map(id => CategoryActions.deleteCategorySuccess({ id })),
+            map(() => CategoryActions.deleteCategorySuccess({ id: action.id })),
             catchError(error =>
               of(CategoryActions.deleteCategoryFailure({ error }))
             )

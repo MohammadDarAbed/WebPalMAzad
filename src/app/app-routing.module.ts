@@ -9,6 +9,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./features/auth/auth.module').then((m) => m.AuthModule),
   },
+  { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
   {
     path: 'home',
     component: HomeComponent,
@@ -32,8 +33,6 @@ const routes: Routes = [
       { path: '', redirectTo: 'products', pathMatch: 'full' }, // default child route
     ]
   },
-  // { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
-  // { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   // // Lazy Loading products:
   {
     path: 'products',
@@ -41,12 +40,12 @@ const routes: Routes = [
       import('./features/products/products.module').then(m => m.ProductsModule),
     canActivate: [AuthGuard]
   },
-  // {
-  //   path: 'categories',
-  //   loadChildren: () =>
-  //     import('./features/categories/category.module').then(m => m.CategoryModule),
-  //   canActivate: [AuthGuard]
-  // },
+  {
+    path: 'categories',
+    loadChildren: () =>
+      import('./features/categories/category.module').then(m => m.CategoryModule),
+    canActivate: [AuthGuard]
+  },
   // {
   //   path: 'users',
   //   loadChildren: () =>

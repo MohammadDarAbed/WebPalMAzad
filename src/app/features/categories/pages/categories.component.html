@@ -1,1 +1,13 @@
-<p>categories works!</p>
+<app-editable-grid
+  *ngIf="gridModel.data.length"
+  [config]="tableConfig"
+  [model]="gridModel"
+  [validators]="validators"
+  (cellValueChanged)="onCellValueChanged($event)"
+  (rowAdded)="onCategoryAdded($event)"
+  (rowDeleted)="onCategoryDeleted($event)"
+  (rowEdited)="onCategoryEdited($event)"
+  (rowReordered)="onCategoryReordered($event)"
+  (columnReordered)="onColumnReordered($event)"
+  >
+</app-editable-grid>
