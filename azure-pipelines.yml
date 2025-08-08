@@ -1,4 +1,9 @@
-trigger:
+trigger: # This line to run the pipline when push any code to the main branch
+  branches: 
+    include:
+      - main
+
+pr: # This line to run the pipeline when pull request is merged to main branch
   branches:
     include:
       - main
