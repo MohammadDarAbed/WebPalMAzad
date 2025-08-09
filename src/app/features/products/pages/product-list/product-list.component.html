@@ -1,3 +1,6 @@
+<ng-container>
+  <mat-progress-bar *ngIf="(isProductLoading$ | async); else formTemplate" mode="indeterminate"></mat-progress-bar>
+  <ng-template #formTemplate>
 <app-editable-grid
   *ngIf="gridModel.data.length"
   [config]="tableConfig"
@@ -12,3 +15,5 @@
   (editFormCreated)="onEditFormCreated($event)"
   >
 </app-editable-grid>
+</ng-template>
+</ng-container>

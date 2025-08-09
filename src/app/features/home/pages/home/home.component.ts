@@ -18,11 +18,11 @@ export class HomeComponent {
 
   menuTree = [
     new TreeMenuItemGroup('products', 'Products', [
-      new TreeMenuItem('list', 'Product List', 'products'),
+      new TreeMenuItem('list', 'Products', 'products'),
       new TreeMenuItem('categories', 'Categories', 'categories'),
     ]),
     new TreeMenuItemGroup('orders', 'Orders', [
-      new TreeMenuItem('list', 'Order List', '/blades/orders/list'),
+      new TreeMenuItem('list', 'Orders', 'orders'),
       new TreeMenuItem('returns', 'Returns', '/blades/orders/returns')
     ])
   ];

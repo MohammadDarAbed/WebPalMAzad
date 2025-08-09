@@ -26,10 +26,15 @@ const routes: Routes = [
           import('./features/categories/category.module').then(m => m.CategoryModule),
       },
       {
-        path: 'users',
+        path: 'orders',
         loadChildren: () =>
-          import('./features/users/users.module').then(m => m.UsersModule),
+          import('./features/orders/order.module').then(m => m.OrderModule),
       },
+      // {
+      //   path: 'users',
+      //   loadChildren: () =>
+      //     import('./features/users/users.module').then(m => m.UsersModule),
+      // },
       { path: '', redirectTo: 'products', pathMatch: 'full' }, // default child route
     ]
   },
@@ -44,6 +49,12 @@ const routes: Routes = [
     path: 'categories',
     loadChildren: () =>
       import('./features/categories/category.module').then(m => m.CategoryModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'orders',
+    loadChildren: () =>
+      import('./features/orders/order.module').then(m => m.OrderModule),
     canActivate: [AuthGuard]
   },
   // {

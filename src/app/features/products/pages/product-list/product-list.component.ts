@@ -13,22 +13,25 @@ import { EditableGridComponent } from '../../../../shared/editable-grid/editable
 import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/editable-grid/Validations/validators.custom';
 import { Category } from '../../../categories/Models/category.model';
-import { selectAllCategories } from '../../../categories/store/category.selectors';
+import { selectAllCategories, selectCategoryLoading } from '../../../categories/store/category.selectors';
 import { User } from '../../../users/models/user.model';
-import { selectAllUsers } from '../../../users/store/Users.selectors';
+import { selectAllUsers, selectUserLoading } from '../../../users/store/Users.selectors';
 import { EditableGridModel } from '../../../../shared/models/editable-grid.model';
 import { ProductState } from '../../store/products.reducer';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   standalone: true,
   selector: 'app-product-list',
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss'],
-  imports: [CommonModule, EditableGridComponent]
+  imports: [CommonModule, EditableGridComponent, MatProgressBarModule]
 })
 export class ProductListComponent implements OnInit {
   products$: Observable<Product[]>;
-  loading$: Observable<boolean>;
+  isProductLoading$: Observable<boolean>;
+  isCategoriesLoading$: Observable<boolean>;
+  isUsersLoading$: Observable<boolean>;
   error$: Observable<any>;
   categories$: Observable<Category[]>;
   users$: Observable<User[]>;
@@ -84,7 +87,9 @@ export class ProductListComponent implements OnInit {
 
   constructor(private store: Store<ProductState>) {
     this.products$ = this.store.select(selectAllProducts);
-    this.loading$ = this.store.select(selectProductLoading);
+    this.isProductLoading$ = this.store.select(selectProductLoading);
+    this.isCategoriesLoading$ = this.store.select(selectCategoryLoading);
+    this.isUsersLoading$ = this.store.select(selectUserLoading);
     this.error$ = this.store.select(selectProductError);
     this.categories$ = this.store.select(selectAllCategories);
     this.users$ = this.store.select(selectAllUsers);

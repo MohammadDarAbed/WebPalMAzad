@@ -1,10 +1,8 @@
 import { Component, Input } from "@angular/core";
-import { Blade } from "../models/blade.model";
 import { ITreeMenuItemGroup, ITreeMenuItem } from "../models/tree-menu.model";
 import { BladeService } from "../Services/blade.service";
 import { CommonModule } from "@angular/common";
 import { Router } from "@angular/router";
-import { ProductListComponent } from "../../../features/products/pages/product-list/product-list.component";
 
 @Component({
     selector: 'app-tree-menu',
