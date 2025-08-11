@@ -34,7 +34,7 @@
                 [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
               <input *ngSwitchCase="'readOnly'" matInput [formControlName]="col.key" [readonly]="true" />
               <ng-container *ngSwitchCase="'select'">
-                <app-combobox-field
+                <app-select-field
                   [formControl]="getFormControl(i, col.key)"
                   [options]="col.options || []"
                   [textField]="col.labelKey || ''"
@@ -42,7 +42,7 @@
                   [valueField]="col.valueKey || ''"
                   [placeholder]="col.placeholder || ''"
                   appearance="outline">
-                </app-combobox-field>
+                </app-select-field>
               </ng-container>
               <input *ngSwitchCase="'date'" matInput [matDatepicker]="picker" [formControlName]="col.key" />
               <mat-datepicker-toggle *ngSwitchCase="'date'" matSuffix [for]="picker"></mat-datepicker-toggle>

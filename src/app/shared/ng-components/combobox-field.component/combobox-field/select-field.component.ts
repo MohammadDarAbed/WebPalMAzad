@@ -5,21 +5,21 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
-  selector: 'app-combobox-field',
+  selector: 'app-select-field',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MatSelectModule, MatFormFieldModule],
-  templateUrl: './combobox-field.component.html',
-  styleUrls: ['./combobox-field.component.scss'],
+  templateUrl: './select-field.component.html',
+  styleUrls: ['./select-field.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => CustomComboboxFieldComponent),
+      useExisting: forwardRef(() => CustomSelectFieldComponent),
       multi: true
     }
   ]
 })
-export class CustomComboboxFieldComponent implements ControlValueAccessor, OnInit, OnChanges {
+export class CustomSelectFieldComponent implements ControlValueAccessor, OnInit, OnChanges {
   @Input() valueField: string = 'id';
   @Input() textField: string = 'name';
   @Input() placeholder: string = 'Select...';

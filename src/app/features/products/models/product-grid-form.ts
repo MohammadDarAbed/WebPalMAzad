@@ -43,8 +43,8 @@ export function ProductGridConfig() {
       {
         key: 'category', // key to access on the column
         label: 'Category', // The column label
-        previewKey: 'category.name', // View the slected value, (in the combobox that not object put the key)
-        valueKey: 'id', // to access on the value to pass it in the model objects fields: item[this.valueField] and to pevire the selected in the edit mode (combobox-field.component.ts) 
+        previewKey: 'category.name', // View the slected value, (in the select that not object put the key)
+        valueKey: 'id', // to access on the value to pass it in the model objects fields: item[this.valueField] and to pevire the selected in the edit mode (select-field.component.ts) 
         labelKey: 'name', // the fields that will be used to display the options value
         type: EditableGridCellType.select,
         placeholder: "Select...", // the placeholder of the selction field

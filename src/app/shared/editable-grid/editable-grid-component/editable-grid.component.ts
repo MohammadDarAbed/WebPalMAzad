@@ -26,10 +26,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { CustomComboboxFieldComponent } from '../../ng-components/combobox-field.component/combobox-field/combobox-field.component';
 import { Subject, takeUntil } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 import { EditableGridModel } from '../../models/editable-grid.model';
+import { CustomSelectFieldComponent } from '../../ng-components/combobox-field.component/combobox-field/select-field.component';
 
 @Pipe({
   name: 'rowValue',
@@ -77,7 +77,7 @@ export class RowValuePipe implements PipeTransform {
     MatDatepickerModule,
     MatNativeDateModule,
     RowValuePipe,
-    CustomComboboxFieldComponent
+    CustomSelectFieldComponent
   ],
   templateUrl: './editable-grid.component.html',
   styleUrls: ['./editable-grid.component.scss'],
