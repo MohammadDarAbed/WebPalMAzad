@@ -9,14 +9,15 @@
 }
 
 .table-footer {
-  height: 7%;
-  align-items: center; // vertical centering
-  margin-bottom: 1px;
+  flex-shrink: 0;
+  height: 50px;
+  background-color: silver;
   display: flex;
-  align-items: center; // vertical centering
-  position: fixed; // fix the header of table
-  bottom: 8%;
-  z-index: 2;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
+  border-top: 3px solid #aaa;
+  user-select: none;
 }
 
 .table-footer-bar {
@@ -24,13 +25,27 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  /* optional if responsiveness is needed */
+  background-color: red;
 }
 
 .table-wrapper {
-  max-height: 85%;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: 95%;
+  border: 1px solid #ccc;
   position: relative;
+  background: white;
+}
+
+.table-scroll-area table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.table-scroll-area {
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .filter-input {
@@ -83,4 +98,17 @@ td {
   padding: 8px;
   border: 1px solid #ddd;
   white-space: nowrap;
+}
+
+table tr:last-child td {
+  border-bottom: 2px solid #ddd;
+}
+
+.open-edit-row {
+  background-color: #fff8e1;
+  /* light yellow highlight, adjust color as you like */
+}
+
+.newOpen-button {
+  cursor: pointer;
 }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { OrderRoutingModule } from './order-routing.module';
-import { OrdersComponent } from './orders.component';
+import { OrdersComponent } from './order-component/orders.component';
 import { OrderEffects } from './store/order.effects';
 import { OrderReducer } from './store/order.reducer';
 import { CategoryEffects } from '../categories/store/category.effects';

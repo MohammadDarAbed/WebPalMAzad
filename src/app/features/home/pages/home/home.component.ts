@@ -4,12 +4,13 @@ import { RouterOutlet } from '@angular/router';
 import { TreeMenuItem, TreeMenuItemGroup } from '../../../../shared/tree-blade-menu/models/tree-menu.model';
 import { TreeMenuComponent } from '../../../../shared/tree-blade-menu/tree-menu/tree-menu.component';
 import { CommonModule } from '@angular/common';
+import { BladeContainerComponent } from '../../../../shared/tree-blade-menu/blade-container/blade-container.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [CommonModule, TreeMenuComponent, RouterOutlet],
+  imports: [CommonModule, TreeMenuComponent, RouterOutlet, BladeContainerComponent],
 })
 export class HomeComponent {
   isCollapsed = false; // Sidebar state

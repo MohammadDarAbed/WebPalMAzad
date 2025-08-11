@@ -86,14 +86,16 @@ export class RowValuePipe implements PipeTransform {
 
 export class EditableGridComponent<T> implements OnInit, OnDestroy {
 
+  EditableGridCellType = EditableGridCellType;
+
   constructor(private changeDetectorRef: ChangeDetectorRef, private readonly dialog: MatDialog) { }
   public gridHeaders: string = '';
   public dateFields: string[] = [];
 
   // #region Inputs
   @Input() config!: TableConfig<T>;
-  @Input() data: T[] = [];
   @Input() public validators: any = {};
+  @Input() openedEditBladeRowIndex: number | null = null;
   @Input()
   set model(value: EditableGridModel<T>) {
     this.innerModel = value;
@@ -117,6 +119,8 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
   @Output() rowDeleted = new EventEmitter<T>();
   @Output() rowEdited = new EventEmitter<{ index: number; row: T }>();
   @Output() rowReordered = new EventEmitter<T[]>();
+  @Output() newEditBladeOpened = new EventEmitter<{ key: string; rowIndex: number }>();
+  @Output() newViewBladeOpened = new EventEmitter<{ key: string; rowIndex: number }>();
   @Output() columnReordered = new EventEmitter<TableColumn<T>[]>();
   @Output() cellValueChanged = new EventEmitter<{ row: any; key: string; value: any }>();
   @Output() editFormCreated = new EventEmitter<{ index: number; form: FormGroup }>();
@@ -315,6 +319,14 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
 
   isRowValid(index: number): boolean | undefined {
     return !this.editingForms.get(index)?.valid
+  }
+
+  openEditBlade(key: string, index: number) {
+    this.newEditBladeOpened.emit({ key: key, rowIndex: index });
+  }
+
+  openViewBlade(key: string, index: number) {
+    this.newViewBladeOpened.emit({ key: key, rowIndex: index });
   }
   // #endregion
 

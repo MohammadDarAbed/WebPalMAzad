@@ -8,12 +8,18 @@ export enum EditableGridCellType {
   date = 'date',
   multiSelect = 'multiSelect',
   comboBox = 'comboBox',
+  openNew = 'openNew',
 }
 
 export enum textcolumnPosition {
   Center = "Center",
   Left = "Left",
   Right = "Right"
+}
+
+export enum TableMode {
+  View = "View",
+  Edit = "Edit"
 }
 
 export const BooleanOptions = [
@@ -36,6 +42,7 @@ export interface TableColumn<T = any> {
   labelKey?: string;
   textPosition?: textcolumnPosition;
   textSize?: number;
+  openNewTapIconDisabled?: boolean;
 }
 
 export interface TableColumnWithStringKey<T> extends TableColumn<T> {
@@ -47,11 +54,11 @@ export interface TableConfig<T = any> {
   columns: TableColumn<T>[];
   addNewRowEnabled?: boolean;       // allow adding new rows
   editable?: boolean;               // allow editing rows
-  readOnly?: boolean;               // Just view grid 
   filterable?: boolean;             // enable filtering
   dragDropRows?: boolean;           // enable row drag and drop
   dragDropColumns?: boolean;        // enable column drag and drop
   headerActionsTemplate?: TemplateRef<any>;  // custom header area
   actionsColumnWidth?: number;             // optional actions column width (e.g. '150px')
   useDialogToDelete?: boolean;             // optional actions column width (e.g. '150px')
+  tableMode?: TableMode;
 }

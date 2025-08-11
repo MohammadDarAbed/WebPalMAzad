@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { EditableGridComponent } from '../../../shared/editable-grid/editable-grid-component/editable-grid.component';
-import { CategoryService } from '../services/category.service';
 import { Category } from '../Models/category.model';
 import { Observable, Subject } from 'rxjs';
 import * as CategoryActions from '../store/category.actions';
 import { select, Store } from '@ngrx/store';
-import { selectAllCategories, selectLastCreatedCategoryId, selectLastDeletedCategoryId, selectLastUpdatedCategoryId } from '../store/category.selectors';
+import { selectAllCategories, selectCategoryLoading, selectLastCreatedCategoryId, selectLastDeletedCategoryId, selectLastUpdatedCategoryId } from '../store/category.selectors';
 import { EditableGridModel } from '../../../shared/models/editable-grid.model';
 import { TableColumn, TableConfig } from '../../../shared/editable-grid/table-column';
 import { CategoryGridConfig } from '../Models/CategoryGridConfig';
-import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { ValidatorFn, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-categories',
@@ -41,10 +40,12 @@ export class CategoriesComponent implements OnInit {
   };
   categories$: Observable<Category[]> | undefined;
   categories: Category[] = [];
+  isCategoriesLoading$: Observable<boolean> | undefined;
   constructor(private readonly store: Store) { }
 
   ngOnInit(): void {
     this.categories$ = this.store.select(selectAllCategories);
+    this.isCategoriesLoading$ = this.store.select(selectCategoryLoading);
     this.store.dispatch(CategoryActions.loadCategories());
     this.categories$.subscribe((categories) => {
       this.categories = categories

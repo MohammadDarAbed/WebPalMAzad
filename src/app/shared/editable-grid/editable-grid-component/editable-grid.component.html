@@ -3,6 +3,7 @@
 </div>
 <!-- Main table -->
 <div class="table-wrapper">
+   <div class="table-scroll-area">
   <table mat-table [dataSource]="orderedItems" class="mat-elevation-z8" cdkDropList cdkDropListOrientation="horizontal"
     (cdkDropListDropped)="dropRow($event)">
 
@@ -46,22 +47,47 @@
               <input *ngSwitchCase="'date'" matInput [matDatepicker]="picker" [formControlName]="col.key" />
               <mat-datepicker-toggle *ngSwitchCase="'date'" matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
+              
+              <ng-container *ngSwitchCase="'openNew'">
+                <ng-container *ngTemplateOutlet="newOpenTemplateEdit"></ng-container>
+              </ng-container>
+
               <span *ngSwitchDefault>{{ row | rowValue:col.key:config.columns }}</span>
               <div class="error-text"
                 *ngIf="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)">
-                {{ getErrorMessage(formGroup, col.key) }}
+                {{ getErrorMessage(formGroup, col.key) }} 
               </div>
             </ng-container>
           </ng-container>
         </ng-container>
+         
         <ng-container *ngSwitchDefault>
-         {{ row | rowValue:col.key:config.columns }}
+          <ng-container *ngIf="col.type != EditableGridCellType.openNew; else newOpenTemplateView">
+         {{ row | rowValue:col.key:config.columns }} 
         </ng-container>
-      </td>
-    </ng-container>
+        </ng-container>
+
+              <!-- Templates -->
+              <ng-template #newOpenTemplateEdit>
+                <button matIconButton [disabled]="col.openNewTapIconDisabled" class="newOpen-button"
+                  (click)="openEditBlade(col.key, i)">
+                  <mat-icon>open_in_new</mat-icon>
+                </button>
+              </ng-template>
+              
+              <ng-template #newOpenTemplateView>
+                <button matMiniFab [disabled]="col.openNewTapIconDisabled" class="newOpen-button" (click)="openViewBlade(col.key, i)">
+                  <mat-icon>menu</mat-icon>
+                </button>
+              </ng-template>
+              
+              </td>
+              
+      </ng-container>
+
 
     <!-- Actions column -->
-    <ng-container *ngIf="!config.readOnly" matColumnDef="actions">
+    <ng-container *ngIf="config.tableMode != 'View'" matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef cdkDrag [style.width.px]="config.actionsColumnWidth" style="text-align: center;"> Actions </th>
       <td mat-cell *matCellDef="let row; let i = index">
         <button mat-icon-button *ngIf="!editingRowIndices.has(i) && config.editable" (click)="startEdit(i)">
@@ -80,11 +106,12 @@
     </ng-container>
 
     <!-- Header row -->
-    <tr mat-header-row *matHeaderRowDef="config.readOnly ? displayedColumns : displayedColumns.concat(['actions'])"></tr>
+    <tr mat-header-row *matHeaderRowDef="config.tableMode == 'View' ? displayedColumns : displayedColumns.concat(['actions'])"></tr>
 
     <!-- Data rows -->
     <tr mat-row
-        *matRowDef="let row; columns: config.readOnly ? displayedColumns : displayedColumns.concat(['actions']);">
+        *matRowDef="let row; let i = index; columns: config.tableMode == 'View' ? displayedColumns : displayedColumns.concat(['actions']);"
+        [class.open-edit-row]='openedEditBladeRowIndex === i'>
     </tr>
 
     <!-- Footer row for totals -->
@@ -112,26 +139,27 @@
   </table>
 </div>
 
-<div class="table-footer">
+<div class="table-footer" *ngIf="config.tableMode != 'View'">
   <ng-container *ngIf="config.headerActionsTemplate; else defaultHeader">
     <ng-template [ngTemplateOutlet]="config.headerActionsTemplate"></ng-template>
   </ng-container>
 
   <ng-template #defaultHeader>
-    <button mat-raised-button color="primary" *ngIf="config.addNewRowEnabled && !config.readOnly" (click)="addNewRow()">
+    <button mat-raised-button color="primary" *ngIf="config.addNewRowEnabled" (click)="addNewRow()">
       Add New Row
     </button>
-    <button mat-raised-button color="accent" *ngIf="config.editable && !config.readOnly && editingRowIndices.size === 0"
+    <button mat-raised-button color="accent" *ngIf="config.editable && editingRowIndices.size === 0"
       (click)="startEditAll()" style="margin-left: 8px;">
       Edit All
     </button>
-    <button mat-raised-button color="primary" *ngIf="config.editable && !config.readOnly && editingRowIndices.size > 0"
+    <button mat-raised-button color="primary" *ngIf="config.editable && editingRowIndices.size > 0"
       (click)="saveAllEdits()" style="margin-left: 8px;">
       Save All
     </button>
-    <button mat-raised-button color="warn" *ngIf="config.editable && !config.readOnly && editingRowIndices.size > 0"
+    <button mat-raised-button color="warn" *ngIf="config.editable && editingRowIndices.size > 0"
       (click)="cancelAllEdits()" style="margin-left: 8px;">
       Cancel All
     </button>
   </ng-template>
+</div>
 </div>

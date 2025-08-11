@@ -1,9 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IBlade } from '../models/blade.model';
 
 @Injectable({ providedIn: 'root' })
 export class BladeService {
+    constructor(private injector: Injector) { }
+
+    createInjector(blade: IBlade): Injector {
+        return Injector.create({
+            providers: [
+                { provide: 'BLADE_DATA', useValue: blade.data }
+            ],
+            parent: this.injector
+        });
+    }
+
     private blades: IBlade[] = [];
     blades$ = new BehaviorSubject<IBlade[]>([]);
 

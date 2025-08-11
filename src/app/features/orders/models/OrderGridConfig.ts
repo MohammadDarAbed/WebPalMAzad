@@ -9,58 +9,83 @@ export function OrderGridConfig() {
     return {
         columns: [
             {
-                key: 'order', label: 'Order',
+                key: 'order',
+                label: 'Order',
                 type: EditableGridCellType.readonly,
-                sortable: true, width: 30,
+                sortable: true,
+                width: 30,
                 textPosition: textcolumnPosition.Center,
                 textSize: 16
             },
             {
-                key: 'totalAmount', label: 'Total Amount',
-                type: EditableGridCellType.number,
-                sortable: true, filterable: true, width: 120,
-                textPosition: textcolumnPosition.Center
-            },
-            {
-                key: 'status', label: 'Status',
-                type: EditableGridCellType.text,
-                sortable: true, filterable: true,
-                width: 120,
-                textPosition: textcolumnPosition.Center
-            },
-            {
-                key: 'buyer', label: 'Buyer',
-                type: EditableGridCellType.text,
-                sortable: true, filterable: true,
-                width: 120,
-                textPosition: textcolumnPosition.Center,
-                previewKey: 'buyer.name'
-            },
-            {
-                key: 'notes', label: 'Notes',
-                type: EditableGridCellType.text,
-                sortable: true, filterable: true, width: 120,
-                textPosition: textcolumnPosition.Center
-            },
-            {
-                key: 'orderDate',
-                label: 'Order Date',
-                type: EditableGridCellType.date,
+                key: 'totalAmount',
+                label: 'Total Amount',
+                type: EditableGridCellType.readonly,
                 sortable: true,
                 filterable: true,
                 width: 120,
                 textPosition: textcolumnPosition.Center
             },
-            // {
-            //     key: 'items',
-            //     label: 'Items',
-            //     type: EditableGridCellType.date,
-            //     sortable: true,
-            //     filterable: true,
-            //     width: 120,
-            //     textPosition: textcolumnPosition.Center,
-            //     previewKey: 'items'
-            // },
+            {
+                key: 'status',
+                label: 'Status',
+                type: EditableGridCellType.readonly,
+                sortable: true,
+                filterable: true,
+                width: 120,
+                textPosition: textcolumnPosition.Center
+            },
+            {
+                key: 'buyer',
+                label: 'Buyer',
+                previewKey: 'buyer.name',
+                valueKey: 'id',
+                labelKey: 'name',
+                options: [],
+                type: EditableGridCellType.select,
+                sortable: true,
+                filterable: true,
+                width: 120,
+                textPosition: textcolumnPosition.Center,
+                placeholder: "Select...",
+            },
+            {
+                key: 'notes',
+                label: 'Notes',
+                type: EditableGridCellType.text,
+                sortable: true,
+                filterable: true,
+                width: 120,
+                textPosition: textcolumnPosition.Center
+            },
+            {
+                key: 'address',
+                label: 'Address',
+                type: EditableGridCellType.text,
+                sortable: true,
+                filterable: true,
+                width: 120,
+                textPosition: textcolumnPosition.Center,
+            },
+            {
+                key: 'orderDate',
+                label: 'Order Date',
+                type: EditableGridCellType.readonly,
+                sortable: true,
+                filterable: true,
+                width: 120,
+                textPosition: textcolumnPosition.Center
+            },
+            {
+                key: 'items',
+                label: 'Items',
+                type: EditableGridCellType.openNew,
+                sortable: true,
+                filterable: true,
+                width: 120,
+                textPosition: textcolumnPosition.Center,
+                openNewTapIconDisabled: false
+            },
 
         ],
         addNewRowEnabled: true,

@@ -4,6 +4,7 @@ $sidebar-collapsed-width: 30px;
 .home-layout {
   display: flex;
   height: 100%;
+  width: 100%;
   transition: all 0.3s ease;
 
   &.collapsed {
@@ -53,4 +54,19 @@ $sidebar-collapsed-width: 30px;
   transition: margin-left 0.3s ease;
   overflow-x: auto;
   background: #f0f0f0;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 80vh;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.table-wrapper {
+  background: #fff;
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+  transition: width 0.3s ease;
 }

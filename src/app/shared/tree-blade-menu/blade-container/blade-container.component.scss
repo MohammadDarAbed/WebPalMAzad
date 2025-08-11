@@ -3,22 +3,26 @@
     flex-direction: row;
     height: 100%;
     overflow-x: auto;
+    padding: 10px;
 }
 
 .blade {
-    width: 400px;
+    width: 600px;
     border-left: 1px solid #ddd;
     background: #fff;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    padding: 10px;
 }
 
 .blade-header {
-    background: #f4f4f4;
-    padding: 8px;
+    background: hsla(0, 1%, 45%, 0.514);
+    padding: 10px;
     font-weight: bold;
     display: flex;
     justify-content: space-between;
+    height: 20px;
 }
 
 .blade-content {

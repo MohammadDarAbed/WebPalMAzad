@@ -2,7 +2,6 @@
   <mat-progress-bar *ngIf="(isProductLoading$ | async); else formTemplate" mode="indeterminate"></mat-progress-bar>
   <ng-template #formTemplate>
 <app-editable-grid
-  *ngIf="gridModel.data.length"
   [config]="tableConfig"
   [model]="gridModel"
   [validators]="validators"

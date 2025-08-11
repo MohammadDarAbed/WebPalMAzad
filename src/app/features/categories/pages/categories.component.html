@@ -1,5 +1,5 @@
 <app-editable-grid
-  *ngIf="gridModel.data.length"
+  *ngIf="gridModel.data && !(isCategoriesLoading$ | async)"
   [config]="tableConfig"
   [model]="gridModel"
   [validators]="validators"

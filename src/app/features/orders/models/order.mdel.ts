@@ -2,11 +2,11 @@ import { Product } from "../../products/models/product.model";
 import { User } from "../../users/models/user.model";
 
 export interface Address {
-    Street: string;
-    City: string;
-    State: string;
-    PostalCode: string;
-    Country: string;
+    street: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
 }
 
 export interface OrderItem {

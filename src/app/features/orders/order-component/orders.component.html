@@ -1,0 +1,15 @@
+<app-editable-grid
+  *ngIf="gridModel.data && !(isOrderLoading$ | async)"
+  [config]="tableConfig"
+  [model]="gridModel"
+  (cellValueChanged)="onCellValueChanged($event)"
+  (rowAdded)="onOrderAdded($event)"
+  (rowDeleted)="onOrderDeleted($event)"
+  (rowEdited)="onOrderEdited($event)"
+  (rowReordered)="onOrderReordered($event)"
+  (columnReordered)="onColumnReordered($event)"
+  (newEditBladeOpened)="openNewEditBlade($event)"
+  (newViewBladeOpened)="openNewViewBlade($event)"
+  [openedEditBladeRowIndex]="openedRowIndex"
+  >
+</app-editable-grid>
