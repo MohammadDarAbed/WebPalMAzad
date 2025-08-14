@@ -129,56 +129,25 @@ export class OrderProductsBladeComponent implements OnInit {
   }
 
   rowEditingFormCreated(event: { index: number, originalRow: any; changes: { [key: string]: any }, form: FormGroup, isChangedFromOriginal: boolean }) {
-    // if (event.changes['product']) {
-    //   const selectedProduct = event.changes['product'];
+    if (event.changes['product']) {
+      const selectedProduct = event.changes['product'];
 
-    //   const priceControl = event.form.get('price');
-    //   if (priceControl) {
-    //     priceControl.setValue(selectedProduct.price, { emitEvent: false });
-    //     this.changeDetectorRef.detectChanges();
-    //   }
+      const priceControl = event.form.get('price');
+      if (priceControl) {
+        priceControl.setValue(selectedProduct.price, { emitEvent: false });
+        this.changeDetectorRef.detectChanges();
+      }
 
-    //   if (this.checkIfExists(selectedProduct.id, event.index)) {
-    //     event.form.get('product')?.setErrors({ duplicateProduct: true });
-    //     this.headerMessage = "This product already exists, you can add its quantity";
-    //   } else {
-    //     event.form.get('product')?.setErrors(null);
-    //     this.headerMessage = "";
-    //   }
+      if (this.checkIfExists(selectedProduct.id, event.index)) {
+        event.form.get('product')?.setErrors({ duplicateProduct: true });
+        this.headerMessage = "This product already exists, you can add its quantity";
+      } else {
+        event.form.get('product')?.setErrors(null);
+        this.headerMessage = "";
+      }
 
-    // }
-
-  }
-
-
-
-  onEditFormCreated(event: { index: number; form: FormGroup }) {
-    const { index, form } = event;
-    const productControl = form.get('product');
-    const priceControl = form.get('price');
-
-    if (productControl) {
-      productControl.valueChanges.subscribe(value => {
-        if (value) {
-          const exists = this.checkIfExists(value.id, index);
-          if (exists) {
-            productControl.setErrors({ duplicateProduct: true });
-            this.headerMessage = "This product already exists, you can add its quantity";
-          } else {
-            productControl.setErrors(null);
-            this.headerMessage = "";
-          }
-
-          if (priceControl) {
-            priceControl.setValue(value.price, { emitEvent: false });
-          }
-        } else {
-          if (priceControl) {
-            priceControl.setValue(null, { emitEvent: false });
-          }
-        }
-      });
     }
+
   }
 
 

@@ -569,8 +569,8 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
   private onRowValueChanged(rowIndex: number, changedValues: any) {
     var isChangedFromOriginal = true;
     const originalRow = this.orderedItems[rowIndex];
-    const form = this.createFormGroup(this.orderedItems[rowIndex], rowIndex);
-
+    const form = this.editingForms.get(rowIndex);
+    if (!form) return;
     // key column changed
     const changedKeys = Object.keys(changedValues).filter(
       key => changedValues[key] !== (originalRow as any)[key]
