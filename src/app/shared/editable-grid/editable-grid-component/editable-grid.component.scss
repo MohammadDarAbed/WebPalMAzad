@@ -8,6 +8,17 @@
   margin-top: 2px;
 }
 
+.table-header {
+  background-color: #aaa;
+  height: 28px;
+  text-align: left;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  display: flex;
+  align-items: center; // vertical center
+  color: red
+}
+
 .table-footer {
   flex-shrink: 0;
   height: 50px;

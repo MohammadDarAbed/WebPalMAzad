@@ -90,7 +90,7 @@ export function OrderGridConfig() {
         ],
         addNewRowEnabled: true,
         editable: true,
-        readOnly: false,
+        readonly: false,
         filterable: true,
         dragDropRows: true,
         dragDropColumns: true,

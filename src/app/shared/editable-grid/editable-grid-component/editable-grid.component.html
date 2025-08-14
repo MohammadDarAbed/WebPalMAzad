@@ -1,5 +1,5 @@
 <div class="table-header">
-  Header
+  {{headerMessage}}
 </div>
 <!-- Main table -->
 <div class="table-wrapper">
@@ -28,14 +28,17 @@
         <ng-container *ngSwitchCase="true">
           <ng-container *ngIf="editingForms.get(i) as formGroup">
             <ng-container [formGroup]="formGroup" [ngSwitch]="col.type">
-              <input *ngSwitchCase="'text'" matInput [formControlName]="col.key" #firstEditableInput
+              <input *ngSwitchCase="EditableGridCellType.text" matInput [formControlName]="col.key" #firstEditableInput
                 [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
-              <input *ngSwitchCase="'number'" type="number" matInput [formControlName]="col.key"
+              <input *ngSwitchCase="EditableGridCellType.number" type="number" matInput [formControlName]="col.key"
                 [class.invalid]="formGroup.get(col.key)?.invalid && (formGroup.get(col.key)?.touched || formGroup.get(col.key)?.dirty)" />
-              <input *ngSwitchCase="'readOnly'" matInput [formControlName]="col.key" [readonly]="true" />
-              <ng-container *ngSwitchCase="'select'">
+              <ng-container *ngSwitchCase="EditableGridCellType.readonly">
+                <span>{{ getFormControl(i, col.key).value }}</span>
+              </ng-container>
+              <ng-container *ngSwitchCase="EditableGridCellType.select">
                 <app-select-field
                   [formControl]="getFormControl(i, col.key)"
+                  [errorMessages]="getErrorMessage(formGroup, col.key)"
                   [options]="col.options || []"
                   [textField]="col.labelKey || ''"
                   [validators]="validators[col.key]?.validators || []"
@@ -44,11 +47,22 @@
                   appearance="outline">
                 </app-select-field>
               </ng-container>
-              <input *ngSwitchCase="'date'" matInput [matDatepicker]="picker" [formControlName]="col.key" />
+              <ng-container *ngSwitchCase="EditableGridCellType.comboBox">
+                <app-combobox-field
+                  [formControl]="getFormControl(i, col.key)"
+                  [options]="col.options || []"
+                  [validators]="validators[col.key]?.validators || []"
+                  [textField]="col.labelKey || ''"
+                  [valueField]="col.valueKey || ''"
+                  [placeholder]="col.placeholder || 'Select or type...'"
+                  appearance="outline">
+                </app-combobox-field>
+              </ng-container>
+              <input *ngSwitchCase="EditableGridCellType.date" matInput [matDatepicker]="picker" [formControlName]="col.key" />
               <mat-datepicker-toggle *ngSwitchCase="'date'" matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
               
-              <ng-container *ngSwitchCase="'openNew'">
+              <ng-container *ngSwitchCase="EditableGridCellType.openNew">
                 <ng-container *ngTemplateOutlet="newOpenTemplateEdit"></ng-container>
               </ng-container>
 

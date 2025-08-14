@@ -2,6 +2,7 @@
   *ngIf="gridModel.data && !(isOrderLoading$ | async)"
   [config]="tableConfig"
   [model]="gridModel"
+  [headerMessage]="headerMessage"
   (cellValueChanged)="onCellValueChanged($event)"
   (rowAdded)="onOrderAdded($event)"
   (rowDeleted)="onOrderDeleted($event)"

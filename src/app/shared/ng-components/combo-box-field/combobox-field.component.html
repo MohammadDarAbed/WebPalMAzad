@@ -1,0 +1,23 @@
+<div class="table-combobox-wrapper">
+  <input matInput type="text" 
+    class="table-combobox-input"
+    [class.invalid]="(internalControl.touched && internalControl.invalid) || (formControl.touched && formControl.invalid)"
+    [placeholder]="placeholder" 
+    [formControl]="internalControl" 
+    [matAutocomplete]="auto" 
+    (input)="onInput($event)"
+    (blur)="onTouched()" 
+    [disabled]="disabled" />
+
+  <mat-icon *ngIf="!isSelected" class="table-search-icon" aria-hidden="true">search</mat-icon>
+  <button *ngIf="isSelected" class="table-cancel-icon" mat-icon-button (click)="cancelEdit()" type="button">
+    <mat-icon>cancel</mat-icon>
+  </button>
+
+
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event)" [displayWith]="displayFn">
+    <mat-option *ngFor="let option of filteredOptions" [value]="option">
+      {{ option[textField] }}
+    </mat-option>
+  </mat-autocomplete>
+</div>

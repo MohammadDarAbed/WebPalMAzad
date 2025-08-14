@@ -52,6 +52,7 @@ export class OrdersComponent implements OnInit {
   users$: Observable<User[]> | undefined;
   isOrderLoading$: Observable<boolean> | undefined;
   orders: Order[] = [];
+  headerMessage: string = '';
   openedRowIndex: number | null = null;
   constructor(private readonly store: Store,
     private bladeService: BladeService

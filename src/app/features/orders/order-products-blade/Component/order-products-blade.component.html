@@ -2,9 +2,13 @@
   *ngIf="gridModel.data && !(isOrderLoading$ | async)"
   [config]="tableConfig"
   [model]="gridModel"
+  [validators]="validators"
+  [headerMessage]="headerMessage"
   (cellValueChanged)="onCellValueChanged($event)"
   (rowAdded)="onOrderAdded($event)"
   (rowDeleted)="onOrderDeleted($event)"
   (rowEdited)="onOrderEdited($event)"
+  (editFormCreated)="onEditFormCreated($event)"
+  (rowEditingFormCreated)="rowEditingFormCreated($event)"
   >
 </app-editable-grid>

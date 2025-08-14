@@ -29,7 +29,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { Subject, takeUntil } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 import { EditableGridModel } from '../../models/editable-grid.model';
-import { CustomSelectFieldComponent } from '../../ng-components/combobox-field.component/combobox-field/select-field.component';
+import { CustomSelectFieldComponent } from '../../ng-components/select-field/select-field.component';
+import { ComboboxFieldComponent } from '../../ng-components/combo-box-field/combobox-field.component';
 
 @Pipe({
   name: 'rowValue',
@@ -77,7 +78,8 @@ export class RowValuePipe implements PipeTransform {
     MatDatepickerModule,
     MatNativeDateModule,
     RowValuePipe,
-    CustomSelectFieldComponent
+    CustomSelectFieldComponent,
+    ComboboxFieldComponent
   ],
   templateUrl: './editable-grid.component.html',
   styleUrls: ['./editable-grid.component.scss'],
@@ -96,6 +98,7 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
   @Input() config!: TableConfig<T>;
   @Input() public validators: any = {};
   @Input() openedEditBladeRowIndex: number | null = null;
+  @Input() headerMessage: string | null = "";
   @Input()
   set model(value: EditableGridModel<T>) {
     this.innerModel = value;
@@ -124,6 +127,7 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
   @Output() columnReordered = new EventEmitter<TableColumn<T>[]>();
   @Output() cellValueChanged = new EventEmitter<{ row: any; key: string; value: any }>();
   @Output() editFormCreated = new EventEmitter<{ index: number; form: FormGroup }>();
+  @Output() rowEditingFormCreated = new EventEmitter<{ index: number, originalRow: any; changes: { [key: string]: any }, form: FormGroup, isChangedFromOriginal: boolean }>();
   // #endregion
 
 
@@ -200,7 +204,7 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
   // Start editing a single row
   startEdit(index: number) {
     this.editingRowIndices.add(index);
-    const form = this.createFormGroup(this.orderedItems[index]);
+    const form = this.createFormGroup(this.orderedItems[index], index);
     this.editingForms.set(index, form);
     this.editFormCreated.emit({ index, form });
   }
@@ -438,7 +442,7 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
         value = rowIndex + 1;
         group[col.key] = new FormControl(value);
       } else if (col.type && col.type !== EditableGridCellType.readonly) {
-        if (col.type === EditableGridCellType.select && col.options?.length) {
+        if ((col.type === EditableGridCellType.select || col.type === EditableGridCellType.comboBox) && col.options?.length) {
           if (typeof row[col.key] === 'object') {
             var value = col.key ? row[col.key] : this.getNestedValue(row[col.key], col.valueKey); // give the selected value as an object
           } else { // if the value is not object find the object from the options
@@ -454,7 +458,9 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
         group[col.key] = new FormControl(value);
       }
     });
-    return new FormGroup(group);
+    const formGroup = new FormGroup(group);
+    this.subscribeToRowChanges(rowIndex!, formGroup);
+    return formGroup;
   }
 
   deleteRowProcess(index: number) {
@@ -532,6 +538,59 @@ export class EditableGridComponent<T> implements OnInit, OnDestroy {
     this.editingRowIndices.clear();
     this.editingForms.clear();
     this.newRowIndices.clear();
+  }
+
+  private subscribeToRowChanges(rowIndex: number, form: FormGroup) {
+    form.valueChanges.pipe(takeUntil(this.destroyed$)).subscribe(changedValues => {
+      this.onRowValueChanged(rowIndex, changedValues);
+    });
+  }
+
+
+  /**
+   * Detects and reports changes made to a row's form during editing.
+   * 
+   * This method:
+   * 1. Compares the current form values with the original row data stored in `orderedItems` (without mutating it).
+   * 2. Identifies only the fields whose values differ from the original row.
+   * 3. Emits a single event (`rowEditingFormCreated`) for the row, containing:
+   *    - The original row data.
+   *    - An object of changed fields and their new values.
+   *    - A flag (`isChangedFromOriginal`) indicating whether any field differs from the original.
+   * 
+   * Notes:
+   * - If all changed fields are reverted back to their original values, `isChangedFromOriginal` will be `false`.
+   * - This method does **not** update `orderedItems`; it only reports changes.
+   * 
+   * @param rowIndex - The index of the row being edited.
+   * @param changedValues - The latest form values for the row.
+   */
+
+  private onRowValueChanged(rowIndex: number, changedValues: any) {
+    var isChangedFromOriginal = true;
+    const originalRow = this.orderedItems[rowIndex];
+    const form = this.createFormGroup(this.orderedItems[rowIndex], rowIndex);
+
+    // key column changed
+    const changedKeys = Object.keys(changedValues).filter(
+      key => changedValues[key] !== (originalRow as any)[key]
+    );
+
+    if (changedKeys.length === 0) isChangedFromOriginal = false;
+
+    // changes values
+    const changes: { [key: string]: any } = {};
+    changedKeys.forEach(key => {
+      changes[key] = changedValues[key];
+    });
+
+    this.rowEditingFormCreated.emit({
+      index: rowIndex,
+      originalRow: originalRow,
+      changes,
+      form: form,
+      isChangedFromOriginal: isChangedFromOriginal
+    });
   }
   //#endregion
 

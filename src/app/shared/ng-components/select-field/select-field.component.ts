@@ -1,6 +1,6 @@
 import { Component, Input, forwardRef, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, ReactiveFormsModule, FormsModule, FormControl, ValidatorFn, Validator, AbstractControl, ValidationErrors } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, ReactiveFormsModule, FormsModule, FormControl, ValidatorFn } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
@@ -25,7 +25,7 @@ export class CustomSelectFieldComponent implements ControlValueAccessor, OnInit,
   @Input() placeholder: string = 'Select...';
   @Input() disabled = false;
   @Input() validators: ValidatorFn[] = [];
-  @Input() errorMessages: { [key: string]: string } = {};
+  @Input() errorMessages: string | null = "";
   @Input() public class: any = {};
   @Input() compareObjects: (o1: any, o2: any) => boolean = (o1, o2) => {
     if (o1 === null && o2 === null) return true;
@@ -100,16 +100,16 @@ export class CustomSelectFieldComponent implements ControlValueAccessor, OnInit,
   }
 
 
-  getErrorMessage(): string {
-    if (!this.formControl.errors) return '';
-    const errors = this.formControl.errors;
-    for (const errorName in errors) {
-      if (this.errorMessages[errorName]) {
-        return this.errorMessages[errorName];
-      }
-    }
-    return 'Invalid value';
-  }
+  // getErrorMessage(): string {
+  //   if (!this.formControl.errors) return '';
+  //   const errors = this.formControl.errors;
+  //   for (const errorName in errors) {
+  //     if (this.errorMessages[errorName]) {
+  //       return this.errorMessages[errorName];
+  //     }
+  //   }
+  //   return 'Invalid value';
+  // }
 
   compareObjectsFn = (o1: any, o2: any) => {
     if (o1 === null && o2 === null) return true;

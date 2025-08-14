@@ -23,18 +23,23 @@ export function OrderItemsGridConfig() {
                 textPosition: textcolumnPosition.Center
             },
             {
-                key: 'name',
-                label: 'name',
-                type: EditableGridCellType.text,
+                key: 'product',
+                label: 'Product',
+                type: EditableGridCellType.comboBox,
                 sortable: true,
                 filterable: true,
                 width: 120,
-                textPosition: textcolumnPosition.Center
+                textPosition: textcolumnPosition.Center,
+                options: [],
+                previewKey: 'product.name',
+                valueKey: 'id',
+                labelKey: 'name',
+
             },
             {
                 key: 'price',
                 label: 'Price',
-                type: EditableGridCellType.number,
+                type: EditableGridCellType.readonly,
                 sortable: true,
                 filterable: true,
                 width: 120,
@@ -43,7 +48,7 @@ export function OrderItemsGridConfig() {
         ],
         addNewRowEnabled: true,
         editable: true,
-        readOnly: false,
+        readonly: false,
         filterable: true,
         dragDropRows: true,
         dragDropColumns: true,
