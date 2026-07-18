@@ -15,20 +15,14 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- checkout: none
+  - checkout: none
 
-- script: |
-    echo "AZURE_DEVOPS_PAT length: ${#AZURE_DEVOPS_PAT}"
-    echo "GITHUB_TOKEN length: ${#GITHUB_TOKEN}"
+  - script: |
+      echo "AZURE_DEVOPS_PAT length: ${#AZURE_DEVOPS_PAT}"
+      echo "GITHUB_TOKEN length: ${#GITHUB_TOKEN}"
+      
+      git clone --mirror https://user:$(AZURE_DEVOPS_PAT)@dev.azure.com/PalMazad/PalMazad/_git/WebPalMazad repo.git
+      cd repo.git
 
-    git clone --mirror https://user:${AZURE_DEVOPS_PAT}@dev.azure.com/PalMazad/PalMazad/_git/WebPalMazad repo.git
-
-    cd repo.git
-
-    git push --mirror https://${GITHUB_TOKEN}@github.com/MohammadDarAbed/WebPalMazad.git
-
-  env:
-    AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
-    GITHUB_TOKEN: $(GITHUB_TOKEN)
-
-  displayName: 'Mirror entire repo from Azure DevOps to GitHub'
+      git push --mirror https://$(GITHUB_TOKEN)@github.com/MohammadDarAbed/WebPalMazad.git
+    displayName: 'Mirror entire repo from Azure DevOps to GitHub'
