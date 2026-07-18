@@ -19,7 +19,8 @@ steps:
 
   - script: |
       echo "AZURE_DEVOPS_PAT length: ${#AZURE_DEVOPS_PAT}"
-
+      echo "GITHUB_TOKEN length: ${#GITHUB_TOKEN}"
+      
       git clone --mirror https://user:$(AZURE_DEVOPS_PAT)@dev.azure.com/PalMazad/PalMazad/_git/WebPalMazad repo.git
       cd repo.git
 
