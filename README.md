@@ -1,59 +1,73 @@
-# WebPalMazad
+# 🟨 WebPalMazad
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
+Modern Angular frontend application built for the PalMazad marketplace platform.
 
-## Development server
+Designed with a modular architecture and integrated with the PalMazad ASP.NET Core API.
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
-```
+## 🚀 Overview
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+WebPalMazad is the frontend application of the PalMazad marketplace.
 
-## Code scaffolding
+It provides a modern user interface for interacting with the backend services, handling authentication, product management, orders, and administrative features.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+---
 
-```bash
-ng generate component component-name
-```
+## 📷 Screenshots
+![LoginPage](./ScreenShots/LoginPage.png)
+![FilterOnNameAndCategory](./ScreenShots/FilterOnNameAndCategory.png)
+![AddNewProduct](./ScreenShots/AddNewProduct.png)
+![CreatedProductNotification](./ScreenShots/CreatedProductNotification.png)
+![ViewSpecificOrder](./ScreenShots/ViewSpecificOrder.png)
+![EditSpecificOrder](./ScreenShots/EditSpecificOrder.png)
+![EditAddressOrder](./ScreenShots/EditAddressOrder.png)
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🧠 Architecture
 
-```bash
-ng generate --help
-```
+- Modular feature-based structure
+- Standalone Components
+- Lazy Loading
+- Dependency Injection
+- Reusable UI Components
 
-## Building
+---
 
-To build the project run:
+## ⚙️ Key Features
 
-```bash
-ng build
-```
+- Authentication & Authorization
+- Login & User Management
+- Product Management
+- Categories
+- Orders
+- Shopping Cart
+- Dashboard
+- API Integration
+- Route Guards
+- Reactive Forms
+- HTTP Interceptors
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## 🛠️ Tech Stack
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+- Angular
+- TypeScript
+- Angular Material
+- RxJS
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+## 🔗 Related Projects
 
-For end-to-end (e2e) testing, run:
+- 🟦 PalMazad API → https://github.com/MohammadDarAbed/PalMazad
+- 🔐 Authentication → https://github.com/MohammadDarAbed/Authentication
 
-```bash
-ng e2e
-```
+---
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🚧 Future Improvements
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Responsive Design
+- UI/UX Enhancements
+- Performance Optimization
