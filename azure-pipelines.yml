@@ -18,7 +18,7 @@ steps:
   - checkout: none
 
   - script: |
-      git clone --bare https://$(AZURE_DEVOPS_PAT)@dev.azure.com/xxx/repo.git repo.git
+      git clone --bare https://$(AZURE_DEVOPS_PAT)@dev.azure.com/PalMazad/PalMazad/_git/WebPalMazad repo.git
       cd repo.git
       git remote add github https://$(GITHUB_TOKEN)@github.com/MohammadDarAbed/WebPalMAzad.git
       git push github --all --force
