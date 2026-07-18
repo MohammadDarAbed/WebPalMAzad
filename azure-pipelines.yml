@@ -18,10 +18,9 @@ steps:
   - checkout: none
 
   - script: |
-      echo "AZURE_DEVOPS_PAT length: ${#AZURE_DEVOPS_PAT}"
-
-      git clone --mirror https://user:$(AZURE_DEVOPS_PAT)@dev.azure.com/PalMazad/PalMazad/_git/WebPalMazad repo.git
+      git clone --bare https://$(AZURE_DEVOPS_PAT)@dev.azure.com/xxx/repo.git repo.git
       cd repo.git
-
-      git push --mirror https://$(GITHUB_TOKEN)@github.com/MohammadDarAbed/WebPalMazad.git
-    displayName: 'Mirror entire repo from Azure DevOps to GitHub'
+      git remote add github https://$(GITHUB_TOKEN)@github.com/MohammadDarAbed/WebPalMAzad.git
+      git push github --all --force
+      git push github --tags --force
+    displayName: Mirror entire repo from Azure DevOps to GitHub
