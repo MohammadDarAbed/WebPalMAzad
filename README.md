@@ -1,36 +1,70 @@
 # 🟨 WebPalMazad
 
-Modern Angular frontend application built for the PalMazad marketplace platform.
-
-Designed with a modular architecture and integrated with the PalMazad ASP.NET Core API.
+Modern Angular frontend application built with a modular architecture for the PalMazad marketplace platform.
 
 ---
 
 ## 🚀 Overview
 
-WebPalMazad is the frontend application of the PalMazad marketplace.
+WebPalMazad is the Angular frontend of the PalMazad marketplace ecosystem.
 
-It provides a modern user interface for interacting with the backend services, handling authentication, product management, orders, and administrative features.
+It communicates with the PalMazad ASP.NET Core API to provide a modern, maintainable, and feature-rich user experience for managing marketplace operations.
 
 ---
 
 ## 📷 Screenshots
-![LoginPage](./ScreenShots/LoginPage.png)
-![FilterOnNameAndCategory](./ScreenShots/FilterOnNameAndCategory.png)
-![AddNewProduct](./ScreenShots/AddNewProduct.png)
-![CreatedProductNotification](./ScreenShots/CreatedProductNotification.png)
-![ViewSpecificOrder](./ScreenShots/ViewSpecificOrder.png)
-![EditSpecificOrder](./ScreenShots/EditSpecificOrder.png)
-![EditAddressOrder](./ScreenShots/EditAddressOrder.png)
+
+### 🔐 Login
+
+![Login](./ScreenShots/LoginPage.png)
+
+---
+
+### 📦 Product Management
+
+![Products](./ScreenShots/FilterOnNameAndCategory.png)
+
+---
+
+### ➕ Create New Product
+
+![Add Product](./ScreenShots/AddNewProduct.png)
+
+---
+
+### ✅ Operation Success Notification
+
+![Notification](./ScreenShots/CreatedProductNotification.png)
+
+---
+
+### 📄 Order Details
+
+![Order Details](./ScreenShots/ViewSpecificOrder.png)
+
+---
+
+### ✏️ Edit Order
+
+![Edit Order](./ScreenShots/EditSpecificOrder.png)
+
+---
+
+### 📍 Edit Shipping Address
+
+![Edit Address](./ScreenShots/EditAddressOrder.png)
+
 ---
 
 ## 🧠 Architecture
 
-- Modular feature-based structure
+- Feature-based architecture
 - Standalone Components
 - Lazy Loading
 - Dependency Injection
+- Shared Services
 - Reusable UI Components
+- Modular and maintainable project structure
 
 ---
 
@@ -38,15 +72,18 @@ It provides a modern user interface for interacting with the backend services, h
 
 - Authentication & Authorization
 - Login & User Management
-- Product Management
-- Categories
-- Orders
+- Product Management (CRUD)
+- Categories Management
+- Order Management
 - Shopping Cart
 - Dashboard
-- API Integration
+- REST API Integration
 - Route Guards
 - Reactive Forms
 - HTTP Interceptors
+- Sorting & Filtering
+- Client-side Validation
+- Reusable Editable Grid Component
 
 ---
 
@@ -56,13 +93,22 @@ It provides a modern user interface for interacting with the backend services, h
 - TypeScript
 - Angular Material
 - RxJS
+- HTML5
+- CSS3
+
+---
+
+## 🧩 Project Structure
+
+The application follows a modular architecture where each feature is isolated into its own module or standalone components, making the codebase easier to maintain, test, and extend.
 
 ---
 
 ## 🔗 Related Projects
 
 - 🟦 PalMazad API → https://github.com/MohammadDarAbed/PalMazad
-- 🔐 Authentication → https://github.com/MohammadDarAbed/Authentication
+- 🔐 Authentication Service → https://github.com/MohammadDarAbed/Authentication
+- 📘 Developer Documentation → https://github.com/MohammadDarAbed/dev-docs
 
 ---
 
@@ -71,3 +117,5 @@ It provides a modern user interface for interacting with the backend services, h
 - Responsive Design
 - UI/UX Enhancements
 - Performance Optimization
+- Dark Mode
+- Localization (Arabic & English)
